@@ -8,17 +8,24 @@ import {
   Clock,
   Sparkles,
   ArrowRight,
+  ExternalLink,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useAuth } from '../hooks/useAuth';
+import { useDocuments } from '../hooks/useDocuments';
+import { formatFileSize } from '../types/document';
+import { DocumentStatusBadge } from '../components/documents/DocumentStatus';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { documents, allDocumentsCount, loading } = useDocuments();
 
   const userGreetingName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+
+  const recentDocuments = documents.slice(0, 4);
 
   return (
     <div className="space-y-8">
@@ -113,7 +120,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content Sections: Honest Empty States (No Fake Documents or Stats) */}
+      {/* Main Content Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Documents Shell */}
         <Card>
@@ -123,21 +130,69 @@ export const DashboardPage: React.FC = () => {
                 <FileText className="h-4 w-4 text-blue-600" />
                 <span>Recent Documents</span>
               </CardTitle>
-              <span className="text-xs text-slate-400">0 loaded</span>
+              <span className="text-xs text-slate-400">
+                {allDocumentsCount} {allDocumentsCount === 1 ? 'file' : 'files'}
+              </span>
             </div>
             <CardDescription className="text-xs">
-              Files uploaded to your workspace will be listed here.
+              Real legal documents stored securely in your private workspace.
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
-            <EmptyState
-              icon={FileText}
-              title="No documents yet"
-              description="Your uploaded legal documents will appear here once the document-upload module is connected in Module 3."
-              actionLabel="Go to Documents"
-              onAction={() => navigate('/documents')}
-              actionIcon={<Upload className="h-4 w-4" />}
-            />
+          <CardContent className="pt-4">
+            {loading ? (
+              <div className="py-12 text-center text-xs text-slate-400">
+                Loading documents...
+              </div>
+            ) : recentDocuments.length > 0 ? (
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                {recentDocuments.map((doc) => (
+                  <div
+                    key={doc.id}
+                    onClick={() => navigate(`/documents/${doc.id}`)}
+                    className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/60 dark:hover:bg-slate-800/30 px-2 rounded-xl transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0">
+                        <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                          {doc.originalFileName || doc.fileName}
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          {formatFileSize(doc.fileSize)} • {new Date(doc.uploadedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <DocumentStatusBadge status={doc.processingStatus} />
+                      <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
+                    </div>
+                  </div>
+                ))}
+
+                <div className="pt-3 text-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs text-blue-600 dark:text-blue-400"
+                    onClick={() => navigate('/documents')}
+                  >
+                    View All Documents in Library ({allDocumentsCount})
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <EmptyState
+                icon={FileText}
+                title="No documents yet"
+                description="Upload your first legal document to start parsing and inspecting it with LegalLens AI."
+                actionLabel="Go to Documents"
+                onAction={() => navigate('/documents')}
+                actionIcon={<Upload className="h-4 w-4" />}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -169,3 +224,4 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+

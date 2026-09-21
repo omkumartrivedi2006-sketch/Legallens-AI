@@ -12,6 +12,7 @@ import { RegisterPage } from '../pages/RegisterPage';
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { DocumentsPage } from '../pages/DocumentsPage';
+import { DocumentDetailsPage } from '../pages/DocumentDetailsPage';
 import { ChatPage } from '../pages/ChatPage';
 import { ComparePage } from '../pages/ComparePage';
 import { SettingsPage } from '../pages/SettingsPage';
@@ -42,6 +43,7 @@ export const AppRoutes: React.FC = () => {
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/documents/:documentId" element={<DocumentDetailsPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/settings" element={<SettingsPage />} />
