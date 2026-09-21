@@ -16,6 +16,19 @@ service cloud.firestore {
                     && request.auth.uid == userId 
                     && request.resource.data.userId == userId;
       allow delete: if request.auth != null && request.auth.uid == userId;
+
+      // User-scoped analyses subcollection: Users can only access analyses for their own documents
+      match /analyses/{analysisId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null 
+                      && request.auth.uid == userId 
+                      && request.resource.data.userId == userId;
+        allow update: if request.auth != null 
+                      && request.auth.uid == userId 
+                      && request.resource.data.userId == userId;
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }
+

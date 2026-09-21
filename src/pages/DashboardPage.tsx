@@ -5,11 +5,11 @@ import {
   MessageSquare,
   GitCompare,
   FileText,
-  Clock,
   Sparkles,
   ArrowRight,
   ExternalLink,
 } from 'lucide-react';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -201,22 +201,23 @@ export const DashboardPage: React.FC = () => {
           <CardHeader className="border-b border-slate-100 dark:border-slate-800/80 pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Clock className="h-4 w-4 text-blue-600" />
+                <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span>Recent Analyses</span>
               </CardTitle>
-              <span className="text-xs text-slate-400">0 runs</span>
+              <span className="text-xs text-slate-400">Gemini Powered</span>
             </div>
             <CardDescription className="text-xs">
-              Past document summaries and risk scans will appear here.
+              AI-generated plain-language summaries and clause extractions.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <EmptyState
-              icon={Clock}
-              title="No analyses recorded"
-              description="Analysis reports, clause extractions, and summaries will appear here once Gemini processing is connected in Module 4."
-              actionLabel="Explore Capabilities"
-              onAction={() => navigate('/#features')}
+              icon={Sparkles}
+              title="No analyses recorded yet"
+              description="Select any uploaded document in your library and click 'Analyze Document' to run grounded Gemini legal analysis."
+              actionLabel="Explore Documents"
+              onAction={() => navigate('/documents')}
+              actionIcon={<Upload className="h-4 w-4" />}
             />
           </CardContent>
         </Card>
@@ -224,4 +225,5 @@ export const DashboardPage: React.FC = () => {
     </div>
   );
 };
+
 
