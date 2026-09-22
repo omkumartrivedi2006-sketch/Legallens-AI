@@ -39,3 +39,7 @@ export interface BaseComponentProps {
   className?: string;
   children?: ReactNode;
 }
+
+export * from './document';
+export * from './analysis';
+export * from './chat';

@@ -18,6 +18,7 @@ import {
   Database,
   Sparkles,
   RefreshCw,
+  MessageSquare,
 } from 'lucide-react';
 
 import { Card, CardContent } from '../components/ui/Card';
@@ -223,6 +224,18 @@ export const DocumentDetailsPage: React.FC = () => {
                 Analyze Document
               </>
             )}
+          </Button>
+
+          {/* Chat with Document button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/chat/${document.id}`)}
+            disabled={document.processingStatus !== 'ready' || !document.extractedText}
+            className="border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40"
+          >
+            <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
+            Chat with Document
           </Button>
 
           <Button

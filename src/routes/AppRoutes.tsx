@@ -45,6 +45,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/documents/:documentId" element={<DocumentDetailsPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat/:documentId" element={<ChatPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>

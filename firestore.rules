@@ -28,6 +28,22 @@ service cloud.firestore {
                       && request.resource.data.userId == userId;
         allow delete: if request.auth != null && request.auth.uid == userId;
       }
+
+      // User-scoped conversations subcollection: Users can only access conversations for their own documents
+      match /conversations/{conversationId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if request.auth != null 
+                              && request.auth.uid == userId 
+                              && request.resource.data.userId == userId;
+
+        // User-scoped messages subcollection: Users can only access messages for their own conversation
+        match /messages/{messageId} {
+          allow read, delete: if request.auth != null && request.auth.uid == userId;
+          allow create, update: if request.auth != null 
+                                && request.auth.uid == userId 
+                                && request.resource.data.userId == userId;
+        }
+      }
     }
   }
 }

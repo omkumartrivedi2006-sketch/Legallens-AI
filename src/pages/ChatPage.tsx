@@ -1,72 +1,216 @@
-import { MessageSquare, Sparkles, ShieldAlert, Bot } from 'lucide-react';
-import { PageHeader } from '../components/ui/PageHeader';
-import { EmptyState } from '../components/ui/EmptyState';
-import { Card, CardContent } from '../components/ui/Card';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { useDocuments } from '../hooks/useDocuments';
+import { useDocumentChat } from '../hooks/useDocumentChat';
+import { DocumentMetadata } from '../types/document';
+import { DocumentSelector } from '../components/chat/DocumentSelector';
+import { ChatHeader } from '../components/chat/ChatHeader';
+import { ConversationSidebar } from '../components/chat/ConversationSidebar';
+import { ChatMessageBubble } from '../components/chat/ChatMessageBubble';
+import { ChatInput } from '../components/chat/ChatInput';
+import { SuggestedQuestions } from '../components/chat/SuggestedQuestions';
+import { LegalChatDisclaimer } from '../components/chat/LegalChatDisclaimer';
+import { Button } from '../components/ui/Button';
 
 export const ChatPage: React.FC = () => {
+  const { documentId } = useParams<{ documentId?: string }>();
+  const navigate = useNavigate();
+
+  const { documents, loading: loadingDocuments } = useDocuments();
+  const [activeDocument, setActiveDocument] = useState<DocumentMetadata | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Match active document from route param
+  useEffect(() => {
+    if (!documentId) {
+      setActiveDocument(null);
+      return;
+    }
+    const found = documents.find((d) => d.id === documentId);
+    if (found) {
+      setActiveDocument(found);
+    }
+  }, [documentId, documents]);
+
+  const {
+    conversations,
+    activeConversationId,
+    messages,
+    isLoadingConversations,
+    isSending,
+    error,
+    canRetry,
+    selectConversation,
+    startNewConversation,
+    deleteConversation,
+    sendMessage,
+    retryLastMessage,
+    clearError,
+  } = useDocumentChat(activeDocument);
+
+  // Scroll to bottom on new messages or when AI starts thinking
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isSending]);
+
+  // Handle document selection from selector
+  const handleSelectDocument = (doc: DocumentMetadata) => {
+    navigate(`/chat/${doc.id}`);
+  };
+
+  // If no documentId in URL, show DocumentSelector
+  if (!documentId) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <DocumentSelector
+          documents={documents}
+          isLoading={loadingDocuments}
+          onSelectDocument={handleSelectDocument}
+        />
+      </div>
+    );
+  }
+
+  // Still loading documents
+  if (loadingDocuments) {
+    return (
+      <div className="py-24 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600 dark:text-blue-400 mb-3" />
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Loading document context...
+        </p>
+        <p className="text-xs text-slate-400 mt-1">Verifying ownership and access permissions</p>
+      </div>
+    );
+  }
+
+  // Document not found in user's documents
+  if (!activeDocument) {
+    return (
+      <div className="max-w-md mx-auto py-16 text-center space-y-4">
+        <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 w-fit mx-auto text-slate-500">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            Document Not Found
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            The requested document could not be found in your account or you do not have permission to access it.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => navigate('/chat')}>
+          <ArrowLeft className="h-4 w-4 mr-1.5" />
+          Choose Another Document
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="AI Chat"
-        description="Ask questions and query specific terms, obligations, or definitions in plain language."
-        badge="Module 5 Ready"
+    <div className="h-[calc(100vh-6.5rem)] flex rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+      {/* Left: Conversation History Sidebar */}
+      <ConversationSidebar
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        isLoading={isLoadingConversations}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        onSelectConversation={selectConversation}
+        onNewConversation={startNewConversation}
+        onDeleteConversation={deleteConversation}
       />
 
-      {/* Trust & AI Boundary Alert */}
-      <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200/80 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20 text-xs text-amber-900 dark:text-amber-200">
-        <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-semibold">Responsible AI Guardrails:</span> AI-generated responses are for informational and navigational assistance only. LegalLens AI cannot interpret statutory precedent or establish attorney-client privilege.
-        </div>
-      </div>
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-slate-50/30 dark:bg-slate-950/20">
+        {/* Header */}
+        <ChatHeader
+          document={activeDocument}
+          onOpenSidebar={() => setIsMobileSidebarOpen(true)}
+          onSwitchDocument={() => navigate('/chat')}
+        />
 
-      <Card className="min-h-[500px] flex flex-col justify-between">
-        <CardContent className="pt-6 flex-1 flex flex-col justify-center">
-          <EmptyState
-            icon={Bot}
-            title="AI Chat Session is Idle"
-            description="The interactive conversational assistant will be activated in Module 5 when Google Gemini API integration and document embeddings are configured."
-            badgeText="Gemini LLM Integration Module"
-          >
-            <div className="mt-8 max-w-lg mx-auto text-left space-y-2">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider text-center mb-3">
-                Upcoming Prompt Capabilities
-              </p>
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span>"What are my termination notice obligations under this contract?"</span>
+        {/* Disclaimer Strip */}
+        <div className="px-4 py-2 bg-white/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/60">
+          <LegalChatDisclaimer />
+        </div>
+
+        {/* Messages Stream */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+          {messages.length === 0 ? (
+            <SuggestedQuestions
+              onSelectQuestion={sendMessage}
+              disabled={isSending}
+            />
+          ) : (
+            messages.map((msg, index) => (
+              <ChatMessageBubble
+                key={msg.id || index}
+                message={msg}
+                isLatestAssistant={
+                  msg.role === 'assistant' && index === messages.length - 1
+                }
+                onRetry={retryLastMessage}
+                canRetry={canRetry}
+              />
+            ))
+          )}
+
+          {/* Real-time Thinking Indicator */}
+          {isSending && (
+            <div className="flex items-center gap-3 my-4 animate-in fade-in">
+              <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center shrink-0">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
               </div>
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span>"Summarize section 5 indemnification in two non-technical sentences."</span>
-              </div>
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                <span>"Generate a checklist of questions I should ask a contract lawyer."</span>
+              <div className="px-4 py-3 rounded-2xl rounded-tl-xs bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                <span>Reading document chunks and grounding response...</span>
               </div>
             </div>
-          </EmptyState>
-        </CardContent>
+          )}
 
-        {/* Disabled Chat Input Area */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 rounded-b-xl">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              disabled
-              placeholder="Chat input is disabled until Gemini LLM integration in Module 5..."
-              className="flex-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-xs text-slate-400 cursor-not-allowed"
-            />
-            <button
-              disabled
-              className="px-4 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-400 text-xs font-medium cursor-not-allowed flex items-center gap-1.5"
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>Send</span>
-            </button>
-          </div>
+          {/* Error Banner */}
+          {error && (
+            <div className="p-3.5 rounded-xl border border-rose-200 bg-rose-50 dark:border-rose-900/60 dark:bg-rose-950/30 text-rose-800 dark:text-rose-200 text-xs flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                <span>{error}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {canRetry && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={retryLastMessage}
+                    className="h-7 text-xs border-rose-300 text-rose-700 hover:bg-rose-100 dark:border-rose-800 dark:text-rose-300"
+                  >
+                    Retry
+                  </Button>
+                )}
+                <button
+                  type="button"
+                  onClick={clearError}
+                  className="text-rose-500 hover:text-rose-700 dark:hover:text-rose-200 font-bold px-1"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
-      </Card>
+
+        {/* Input */}
+        <ChatInput
+          onSendMessage={sendMessage}
+          disabled={activeDocument.processingStatus !== 'ready' || !activeDocument.extractedText}
+          isLoading={isSending}
+        />
+      </div>
     </div>
   );
 };
