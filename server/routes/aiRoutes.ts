@@ -3,6 +3,7 @@ import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddlewa
 import { documentAnalysisService } from '../services/documentAnalysisService';
 import { documentChatService } from '../services/documentChatService';
 import { documentComparisonService } from '../services/documentComparisonService';
+import { documentInsightService } from '../services/documentInsightService';
 import { geminiService, GeminiServiceError } from '../services/geminiService';
 
 export const aiRouter = Router();
@@ -166,4 +167,58 @@ aiRouter.post(
     }
   }
 );
+
+// Authenticated document legal insights endpoint
+aiRouter.post(
+  '/documents/:documentId/insights',
+  authMiddleware,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { documentId } = req.params;
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized: User authentication required.' });
+      return;
+    }
+
+    const {
+      fileName,
+      fileType,
+      extractedText,
+      processingStatus,
+      userId: bodyUserId,
+      existingAnalysis,
+    } = req.body;
+
+    try {
+      const record = await documentInsightService.generateInsights(userId, {
+        documentId,
+        userId: bodyUserId || userId,
+        fileName,
+        fileType,
+        extractedText,
+        processingStatus,
+        existingAnalysis,
+      });
+
+      res.status(200).json({
+        success: true,
+        insights: record,
+      });
+    } catch (error: any) {
+      if (error instanceof GeminiServiceError) {
+        res.status(error.statusCode).json({
+          error: error.message,
+        });
+        return;
+      }
+
+      console.error('Unhandled insights route error:', error);
+      res.status(500).json({
+        error: 'An unexpected error occurred while generating document insights.',
+      });
+    }
+  }
+);
+
 

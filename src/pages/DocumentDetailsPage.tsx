@@ -20,6 +20,7 @@ import {
   RefreshCw,
   MessageSquare,
   GitCompare,
+  ListTodo,
 } from 'lucide-react';
 
 import { Card, CardContent } from '../components/ui/Card';
@@ -249,6 +250,18 @@ export const DocumentDetailsPage: React.FC = () => {
           >
             <GitCompare className="h-3.5 w-3.5 mr-1.5 text-indigo-600 dark:text-indigo-400" />
             Compare
+          </Button>
+
+          {/* Legal Insights & Action Center button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/insights/${document.id}`)}
+            disabled={document.processingStatus !== 'ready' || !document.extractedText}
+            className="border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+          >
+            <ListTodo className="h-3.5 w-3.5 mr-1.5 text-emerald-600 dark:text-emerald-400" />
+            Legal Insights
           </Button>
 
           <Button

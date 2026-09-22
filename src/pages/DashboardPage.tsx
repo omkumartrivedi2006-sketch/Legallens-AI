@@ -8,6 +8,10 @@ import {
   Sparkles,
   ArrowRight,
   ExternalLink,
+  Calendar,
+  CheckSquare,
+  ListTodo,
+  Clock,
 } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
@@ -63,7 +67,7 @@ export const DashboardPage: React.FC = () => {
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card
             className="hover:border-blue-300 dark:hover:border-blue-800 transition-all cursor-pointer group"
             onClick={() => navigate('/documents')}
@@ -77,7 +81,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <CardTitle className="text-base font-semibold mt-3">Upload Document</CardTitle>
               <CardDescription className="text-xs">
-                Import contracts, agreements, or terms to parse and explore in the documents module.
+                Import contracts, agreements, or terms to parse and explore.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -95,7 +99,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <CardTitle className="text-base font-semibold mt-3">Ask AI</CardTitle>
               <CardDescription className="text-xs">
-                Inquire about legal clauses, terminology, or obligations through natural language queries.
+                Inquire about legal clauses, terminology, or obligations.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -113,7 +117,25 @@ export const DashboardPage: React.FC = () => {
               </div>
               <CardTitle className="text-base font-semibold mt-3">Compare Documents</CardTitle>
               <CardDescription className="text-xs">
-                Diff two versions of an agreement side-by-side to highlight added or modified conditions.
+                Diff two versions of an agreement side-by-side to highlight added or modified terms.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card
+            className="hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group"
+            onClick={() => navigate('/insights')}
+          >
+            <CardHeader className="p-5">
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
+              </div>
+              <CardTitle className="text-base font-semibold mt-3">Legal Action Center</CardTitle>
+              <CardDescription className="text-xs">
+                Track obligations, upcoming milestones, and your personalized action checklist.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -222,6 +244,92 @@ export const DashboardPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Legal Insights & Action Center Dashboard Widget (Requirement 33, 34) */}
+      <Card className="border-slate-200 dark:border-slate-800 shadow-xs">
+        <CardHeader className="border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <ListTodo className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Legal Insights & Action Center</span>
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/insights')}
+              className="text-xs text-blue-600 dark:text-blue-400"
+            >
+              <span>Open Action Center</span>
+              <ArrowRight className="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </div>
+          <CardDescription className="text-xs">
+            Review actionable obligations, grounded milestones, and active legal tasks.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-5">
+          {documents.filter((d) => d.processingStatus === 'ready').length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div
+                onClick={() => navigate('/insights')}
+                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-blue-300 dark:hover:border-blue-800 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  <span>Documents Ready</span>
+                </div>
+                <p className="text-xl font-bold text-slate-900 dark:text-white mt-1.5">
+                  {documents.filter((d) => d.processingStatus === 'ready').length}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Available for deep legal insight extraction
+                </p>
+              </div>
+
+              <div
+                onClick={() => navigate('/insights')}
+                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <Calendar className="h-4 w-4 text-emerald-600" />
+                  <span>Document Deadlines</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                  Review timeframes in Document Insights
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Grounded notice and milestone tracking
+                </p>
+              </div>
+
+              <div
+                onClick={() => navigate('/insights')}
+                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <CheckSquare className="h-4 w-4 text-indigo-600" />
+                  <span>Action Checklist</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                  Manage tasks across agreements
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Interactive checklist tracking
+                </p>
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              icon={ListTodo}
+              title="No pending legal actions found"
+              description="Upload your legal documents to extract actionable obligations, milestone dates, and customized checklists."
+              actionLabel="Upload Document"
+              onAction={() => navigate('/documents')}
+              actionIcon={<Upload className="h-4 w-4" />}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

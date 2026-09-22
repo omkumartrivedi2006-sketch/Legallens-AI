@@ -44,6 +44,22 @@ service cloud.firestore {
                                 && request.resource.data.userId == userId;
         }
       }
+
+      // User-scoped insights subcollection: Users can only access insights for their own documents
+      match /insights/{insightId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if request.auth != null 
+                              && request.auth.uid == userId 
+                              && request.resource.data.userId == userId;
+      }
+
+      // User-scoped checklistItems subcollection: Users can only access checklist items for their own documents
+      match /checklistItems/{itemId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if request.auth != null 
+                              && request.auth.uid == userId 
+                              && request.resource.data.userId == userId;
+      }
     }
 
     // User-scoped comparisons collection: Users can only access their own comparisons

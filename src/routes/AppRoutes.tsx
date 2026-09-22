@@ -16,6 +16,8 @@ import { DocumentDetailsPage } from '../pages/DocumentDetailsPage';
 import { ChatPage } from '../pages/ChatPage';
 import { ComparePage } from '../pages/ComparePage';
 import { ComparisonDetailsPage } from '../pages/ComparisonDetailsPage';
+import { InsightsPage } from '../pages/InsightsPage';
+import { DocumentInsightsPage } from '../pages/DocumentInsightsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { PrivacyPage } from '../pages/PrivacyPage';
 import { TermsPage } from '../pages/TermsPage';
@@ -51,6 +53,8 @@ export const AppRoutes: React.FC = () => {
           <Route path="/comparisons" element={<ComparePage defaultTab="history" />} />
           <Route path="/comparisons/:comparisonId" element={<ComparisonDetailsPage />} />
           <Route path="/compare/:comparisonId" element={<ComparisonDetailsPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/insights/:documentId" element={<DocumentInsightsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>

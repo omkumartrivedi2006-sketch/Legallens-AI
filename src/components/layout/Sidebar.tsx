@@ -5,6 +5,7 @@ import {
   FileText,
   MessageSquare,
   GitCompare,
+  ListTodo,
   Settings,
   Scale,
   X,
@@ -28,6 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'Documents', href: '/documents', icon: FileText },
     { label: 'AI Chat', href: '/chat', icon: MessageSquare },
     { label: 'Compare', href: '/compare', icon: GitCompare },
+    { label: 'Legal Insights', href: '/insights', icon: ListTodo },
     { label: 'Settings', href: '/settings', icon: Settings },
   ];
 
