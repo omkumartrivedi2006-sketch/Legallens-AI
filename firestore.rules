@@ -69,6 +69,22 @@ service cloud.firestore {
                             && request.auth.uid == userId 
                             && request.resource.data.userId == userId;
     }
+
+    // User-scoped unifiedConversations collection: Multi-document conversation history
+    match /users/{userId}/unifiedConversations/{conversationId} {
+      allow read, delete: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null 
+                            && request.auth.uid == userId 
+                            && request.resource.data.userId == userId;
+
+      // Messages subcollection within a unified conversation
+      match /messages/{messageId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+        allow create, update: if request.auth != null 
+                              && request.auth.uid == userId 
+                              && request.resource.data.userId == userId;
+      }
+    }
   }
 }
 

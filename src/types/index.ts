@@ -45,3 +45,4 @@ export * from './analysis';
 export * from './chat';
 export * from './comparison';
 export * from './insight';
+export * from './unified';

@@ -38,6 +38,17 @@ import {
   validateLegalInsightsOutput,
   LEGAL_INSIGHTS_JSON_SCHEMA,
 } from '../schemas/legalInsightsSchema';
+import {
+  LEGAL_UNIFIED_SYSTEM_PROMPT,
+  buildUnifiedQueryPrompt,
+  ScopedDocumentContext,
+  UnifiedChatHistoryItem,
+} from '../prompts/unifiedIntelligencePrompt';
+import {
+  LegalUnifiedOutput,
+  validateLegalUnifiedOutput,
+  LEGAL_UNIFIED_JSON_SCHEMA,
+} from '../schemas/unifiedIntelligenceSchema';
 
 export class GeminiServiceError extends Error {
   constructor(
@@ -485,6 +496,112 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalInsightsOutput,
+      model,
+    };
+  },
+
+  /**
+   * Synthesizes cross-document legal intelligence grounded in multi-document chunk contexts.
+   */
+  async queryUnifiedIntelligence(params: {
+    documents: ScopedDocumentContext[];
+    conversationHistory: UnifiedChatHistoryItem[];
+    userQuestion: string;
+  }): Promise<{ result: LegalUnifiedOutput; model: string }> {
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!apiKey) {
+      throw new GeminiServiceError(
+        'GEMINI_API_KEY is not configured on the server. Please add your Gemini API key to .env.local to enable multi-document AI intelligence.',
+        503
+      );
+    }
+
+    const { documents, conversationHistory, userQuestion } = params;
+
+    if (!userQuestion || userQuestion.trim().length === 0) {
+      throw new GeminiServiceError('User question cannot be empty.', 400);
+    }
+
+    if (!documents || documents.length === 0) {
+      throw new GeminiServiceError('No documents provided for unified query.', 400);
+    }
+
+    const model = this.getModelName();
+    const ai = new GoogleGenAI({ apiKey });
+
+    const contents = buildUnifiedQueryPrompt({
+      documents,
+      conversationHistory,
+      userQuestion: userQuestion.trim(),
+    });
+
+    let rawText = '';
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+        config: {
+          systemInstruction: LEGAL_UNIFIED_SYSTEM_PROMPT,
+          responseMimeType: 'application/json',
+          responseSchema: LEGAL_UNIFIED_JSON_SCHEMA,
+          temperature: 0.1, // Low temperature for high factual grounding
+        },
+      });
+
+      rawText = response.text || '';
+    } catch (apiError: any) {
+      const message = apiError?.message || 'Gemini API request failed.';
+      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
+        throw new GeminiServiceError(
+          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
+          401,
+          apiError
+        );
+      }
+      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
+        throw new GeminiServiceError(
+          'Gemini API rate limit or quota exceeded. Please try again shortly.',
+          429,
+          apiError
+        );
+      }
+      throw new GeminiServiceError(
+        `Gemini API error during unified intelligence query: ${message}`,
+        502,
+        apiError
+      );
+    }
+
+    if (!rawText.trim()) {
+      throw new GeminiServiceError(
+        'Empty response received from Gemini multi-document intelligence engine.',
+        502
+      );
+    }
+
+    let parsedData: unknown;
+    try {
+      parsedData = JSON.parse(rawText);
+    } catch (parseErr) {
+      console.error('Failed to parse Gemini unified response as JSON:', rawText);
+      throw new GeminiServiceError(
+        'Failed to parse structured JSON unified intelligence response from Gemini.',
+        502,
+        parseErr
+      );
+    }
+
+    // Validate structured response
+    const validation = validateLegalUnifiedOutput(parsedData);
+    if (!validation.valid) {
+      throw new GeminiServiceError(
+        `AI unified output validation failed: ${validation.errors?.join(', ')}`,
+        502
+      );
+    }
+
+    return {
+      result: parsedData as LegalUnifiedOutput,
       model,
     };
   },

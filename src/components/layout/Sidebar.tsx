@@ -6,6 +6,7 @@ import {
   MessageSquare,
   GitCompare,
   ListTodo,
+  Layers,
   Settings,
   Scale,
   X,
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { label: 'AI Chat', href: '/chat', icon: MessageSquare },
     { label: 'Compare', href: '/compare', icon: GitCompare },
     { label: 'Legal Insights', href: '/insights', icon: ListTodo },
+    { label: 'Unified Search', href: '/unified', icon: Layers },
     { label: 'Settings', href: '/settings', icon: Settings },
   ];
 

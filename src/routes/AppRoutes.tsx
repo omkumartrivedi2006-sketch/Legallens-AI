@@ -18,6 +18,7 @@ import { ComparePage } from '../pages/ComparePage';
 import { ComparisonDetailsPage } from '../pages/ComparisonDetailsPage';
 import { InsightsPage } from '../pages/InsightsPage';
 import { DocumentInsightsPage } from '../pages/DocumentInsightsPage';
+import { UnifiedIntelligencePage } from '../pages/UnifiedIntelligencePage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { PrivacyPage } from '../pages/PrivacyPage';
 import { TermsPage } from '../pages/TermsPage';
@@ -55,6 +56,8 @@ export const AppRoutes: React.FC = () => {
           <Route path="/compare/:comparisonId" element={<ComparisonDetailsPage />} />
           <Route path="/insights" element={<InsightsPage />} />
           <Route path="/insights/:documentId" element={<DocumentInsightsPage />} />
+          <Route path="/unified" element={<UnifiedIntelligencePage />} />
+          <Route path="/search" element={<UnifiedIntelligencePage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>

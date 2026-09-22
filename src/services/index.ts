@@ -5,6 +5,7 @@ export * from './extractionService';
 export * from './aiService';
 export * from './comparisonService';
 export * from './insightService';
+export * from './unifiedService';
 
 export const SERVICE_REGISTRY = {
   auth: 'firebase-auth-active',

@@ -4,6 +4,7 @@ import { documentAnalysisService } from '../services/documentAnalysisService';
 import { documentChatService } from '../services/documentChatService';
 import { documentComparisonService } from '../services/documentComparisonService';
 import { documentInsightService } from '../services/documentInsightService';
+import { unifiedIntelligenceService } from '../services/unifiedIntelligenceService';
 import { geminiService, GeminiServiceError } from '../services/geminiService';
 
 export const aiRouter = Router();
@@ -216,6 +217,92 @@ aiRouter.post(
       console.error('Unhandled insights route error:', error);
       res.status(500).json({
         error: 'An unexpected error occurred while generating document insights.',
+      });
+    }
+  }
+);
+
+// Authenticated multi-document legal intelligence query endpoint
+aiRouter.post(
+  '/unified/query',
+  authMiddleware,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized: User authentication required.' });
+      return;
+    }
+
+    const { documentIds, question, conversationId, history, documents } = req.body;
+
+    try {
+      const assistantMessage = await unifiedIntelligenceService.processUnifiedQuery(userId, {
+        documentIds,
+        question,
+        conversationId,
+        history,
+        documents,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: assistantMessage,
+        conversationTitle: assistantMessage.suggestedTitle,
+      });
+    } catch (error: any) {
+      if (error instanceof GeminiServiceError) {
+        res.status(error.statusCode).json({
+          error: error.message,
+        });
+        return;
+      }
+
+      console.error('Unhandled unified query route error:', error);
+      res.status(500).json({
+        error: 'An unexpected error occurred during multi-document intelligence query.',
+      });
+    }
+  }
+);
+
+// Authenticated library-wide lexical search and clause finder endpoint
+aiRouter.post(
+  '/unified/search',
+  authMiddleware,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized: User authentication required.' });
+      return;
+    }
+
+    const { documentIds, query, clauseCategory, documents } = req.body;
+
+    try {
+      const searchResults = await unifiedIntelligenceService.searchLibrary(userId, {
+        documentIds,
+        query,
+        clauseCategory,
+        documents: documents || [],
+      });
+
+      res.status(200).json({
+        success: true,
+        ...searchResults,
+      });
+    } catch (error: any) {
+      if (error instanceof GeminiServiceError) {
+        res.status(error.statusCode).json({
+          error: error.message,
+        });
+        return;
+      }
+
+      console.error('Unhandled unified search route error:', error);
+      res.status(500).json({
+        error: 'An unexpected error occurred while searching documents.',
       });
     }
   }

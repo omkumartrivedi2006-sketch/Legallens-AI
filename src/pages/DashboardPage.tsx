@@ -12,6 +12,7 @@ import {
   CheckSquare,
   ListTodo,
   Clock,
+  Layers,
 } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
@@ -67,7 +68,7 @@ export const DashboardPage: React.FC = () => {
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <Card
             className="hover:border-blue-300 dark:hover:border-blue-800 transition-all cursor-pointer group"
             onClick={() => navigate('/documents')}
@@ -133,9 +134,27 @@ export const DashboardPage: React.FC = () => {
                 </div>
                 <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all" />
               </div>
-              <CardTitle className="text-base font-semibold mt-3">Legal Action Center</CardTitle>
+              <CardTitle className="text-base font-semibold mt-3">Action Center</CardTitle>
               <CardDescription className="text-xs">
-                Track obligations, upcoming milestones, and your personalized action checklist.
+                Track obligations, upcoming milestones, and personal action checklists.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card
+            className="hover:border-indigo-300 dark:hover:border-indigo-800 transition-all cursor-pointer group"
+            onClick={() => navigate('/unified')}
+          >
+            <CardHeader className="p-5">
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Layers className="h-5 w-5" />
+                </div>
+                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+              </div>
+              <CardTitle className="text-base font-semibold mt-3">Unified Intelligence</CardTitle>
+              <CardDescription className="text-xs">
+                Cross-document queries, library clause search, and conflict detection.
               </CardDescription>
             </CardHeader>
           </Card>
