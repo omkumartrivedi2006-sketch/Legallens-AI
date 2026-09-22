@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddleware';
 import { documentAnalysisService } from '../services/documentAnalysisService';
 import { documentChatService } from '../services/documentChatService';
+import { documentComparisonService } from '../services/documentComparisonService';
 import { geminiService, GeminiServiceError } from '../services/geminiService';
 
 export const aiRouter = Router();
@@ -118,3 +119,51 @@ aiRouter.post(
     }
   }
 );
+
+// Authenticated document comparison endpoint
+aiRouter.post(
+  '/comparisons',
+  authMiddleware,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const userId = req.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized: User authentication required.' });
+      return;
+    }
+
+    const { documentA, documentB } = req.body;
+
+    if (!documentA || !documentB) {
+      res.status(400).json({
+        error: 'Missing required comparison payload. Please select both Document A and Document B.',
+      });
+      return;
+    }
+
+    try {
+      const comparisonRecord = await documentComparisonService.compareDocuments(userId, {
+        documentA,
+        documentB,
+      });
+
+      res.status(200).json({
+        success: true,
+        comparison: comparisonRecord,
+      });
+    } catch (error: any) {
+      if (error instanceof GeminiServiceError) {
+        res.status(error.statusCode).json({
+          error: error.message,
+        });
+        return;
+      }
+
+      console.error('Unhandled comparison route error:', error);
+      res.status(500).json({
+        error: 'An unexpected error occurred while comparing the documents.',
+      });
+    }
+  }
+);
+

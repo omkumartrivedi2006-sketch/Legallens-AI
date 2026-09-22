@@ -45,6 +45,14 @@ service cloud.firestore {
         }
       }
     }
+
+    // User-scoped comparisons collection: Users can only access their own comparisons
+    match /users/{userId}/comparisons/{comparisonId} {
+      allow read, delete: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null 
+                            && request.auth.uid == userId 
+                            && request.resource.data.userId == userId;
+    }
   }
 }
 

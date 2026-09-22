@@ -19,6 +19,7 @@ import {
   Sparkles,
   RefreshCw,
   MessageSquare,
+  GitCompare,
 } from 'lucide-react';
 
 import { Card, CardContent } from '../components/ui/Card';
@@ -236,6 +237,18 @@ export const DocumentDetailsPage: React.FC = () => {
           >
             <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
             Chat with Document
+          </Button>
+
+          {/* Compare Document button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/compare?docA=${document.id}`)}
+            disabled={document.processingStatus !== 'ready' || !document.extractedText}
+            className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-850"
+          >
+            <GitCompare className="h-3.5 w-3.5 mr-1.5 text-indigo-600 dark:text-indigo-400" />
+            Compare
           </Button>
 
           <Button

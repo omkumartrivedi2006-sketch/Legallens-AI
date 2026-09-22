@@ -43,3 +43,4 @@ export interface BaseComponentProps {
 export * from './document';
 export * from './analysis';
 export * from './chat';
+export * from './comparison';

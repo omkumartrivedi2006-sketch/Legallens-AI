@@ -45,8 +45,8 @@ app.use(
 );
 
 // Start server
-const server = app.listen(PORT, () => {
-  console.log(`[LegalLens AI] Server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[LegalLens AI] Server running on http://127.0.0.1:${PORT}`);
   console.log(`[LegalLens AI] GenAI model: ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}`);
   console.log(`[LegalLens AI] API key configured: ${Boolean(process.env.GEMINI_API_KEY)}`);
 });
