@@ -77,7 +77,7 @@ export const UserMenu: React.FC = () => {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-60 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-card py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute right-0 mt-2 w-60 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-[#0D0D0D]/90 backdrop-blur-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
           role="menu"
           aria-orientation="vertical"
         >

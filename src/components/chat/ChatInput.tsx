@@ -44,8 +44,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="p-3 sm:p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
-      <div className="max-w-4xl mx-auto flex items-end gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all shadow-inner">
+    <div className="p-3 sm:p-4 bg-white/75 dark:bg-[#080808]/80 backdrop-blur-md border-t border-slate-200/80 dark:border-white/10">
+      <div className="max-w-4xl mx-auto flex items-end gap-2 bg-slate-50/70 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/40 backdrop-blur-xs transition-all shadow-xs">
         <textarea
           ref={textareaRef}
           rows={1}
@@ -63,7 +63,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           size="sm"
           onClick={handleSubmit}
           disabled={!text.trim() || disabled || isLoading}
-          className="h-9 w-9 rounded-xl p-0 shrink-0 flex items-center justify-center shadow-sm"
+          className="h-9 w-9 rounded-xl p-0 shrink-0 flex items-center justify-center shadow-xs"
           aria-label="Send question"
         >
           {isLoading ? (
@@ -74,7 +74,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </Button>
       </div>
       <p className="text-[11px] text-slate-400 text-center mt-2 hidden sm:block">
-        Press <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-[10px]">Enter</kbd> to send, <kbd className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-[10px]">Shift + Enter</kbd> for a new line
+        Press <kbd className="font-mono bg-slate-200/60 dark:bg-white/10 px-1 py-0.5 rounded text-[10px] border border-slate-200/60 dark:border-white/5">Enter</kbd> to send, <kbd className="font-mono bg-slate-200/60 dark:bg-white/10 px-1 py-0.5 rounded text-[10px] border border-slate-200/60 dark:border-white/5">Shift + Enter</kbd> for a new line
       </p>
     </div>
   );

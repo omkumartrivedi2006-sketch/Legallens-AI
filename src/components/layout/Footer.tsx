@@ -4,7 +4,7 @@ import { Scale, ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-neutral-200 dark:border-white/10 bg-[#F7F8FA] dark:bg-[#0A0A0A] text-neutral-600 dark:text-[#858585] transition-colors">
+    <footer className="border-t border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-[rgba(8,8,8,0.7)] backdrop-blur-md text-neutral-600 dark:text-[#858585] transition-colors relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           {/* Brand Column */}

@@ -17,7 +17,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, variant = '
       type="button"
       onClick={toggleTheme}
       className={cn(
-        'relative inline-flex items-center justify-center rounded-lg p-2 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 dark:text-[#B8B8B8] dark:hover:text-white dark:hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600',
+        'relative inline-flex items-center justify-center rounded-xl p-2 text-neutral-600 hover:text-neutral-950 bg-white/60 dark:bg-white/[0.045] hover:bg-white/90 dark:hover:bg-white/[0.08] border border-slate-200/80 dark:border-white/10 backdrop-blur-md dark:text-[#B8B8B8] dark:hover:text-white transition-all shadow-xs focus-visible:ring-2 focus-visible:ring-blue-600',
         variant === 'labeled' ? 'px-3 py-2 gap-2 text-xs font-medium' : 'h-8 w-8',
         className
       )}

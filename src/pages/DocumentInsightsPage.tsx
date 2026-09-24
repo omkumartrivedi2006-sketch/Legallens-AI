@@ -204,19 +204,19 @@ export const DocumentInsightsPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-left text-xs text-slate-600 dark:text-slate-300 pt-2">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center gap-2">
                 <FileCheck2 className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Affirmative Duties</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Milestone Deadlines</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center gap-2">
                 <CheckSquare className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Action Checklist</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center gap-2">
                 <MessageSquareCode className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Lawyer Prep Questions</span>
               </div>
@@ -256,13 +256,13 @@ export const DocumentInsightsPage: React.FC = () => {
           />
 
           {/* Navigation Tab Bar */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-850 rounded-xl overflow-x-auto text-xs font-semibold">
+          <div className="flex items-center gap-1.5 p-1 bg-slate-200/50 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10 rounded-xl backdrop-blur-xs overflow-x-auto text-xs font-semibold">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                 activeTab === 'all'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -271,51 +271,51 @@ export const DocumentInsightsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('obligations')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === 'obligations'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>Obligations</span>
-              <span className="font-mono text-[10px] px-1.5 rounded-full bg-slate-200 dark:bg-slate-800">
+              <span className="font-mono text-[10px] px-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                 {result.obligations.length}
               </span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('deadlines')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === 'deadlines'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>Deadlines</span>
-              <span className="font-mono text-[10px] px-1.5 rounded-full bg-slate-200 dark:bg-slate-800">
+              <span className="font-mono text-[10px] px-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                 {result.deadlines.length}
               </span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('checklist')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === 'checklist'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>Action Checklist</span>
-              <span className="font-mono text-[10px] px-1.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+              <span className="font-mono text-[10px] px-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                 {checklistItems.length || result.checklist.length}
               </span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('clauses')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                 activeTab === 'clauses'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -324,15 +324,15 @@ export const DocumentInsightsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('review')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === 'review'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>Areas to Review</span>
               {result.areasToReview.length > 0 && (
-                <span className="font-mono text-[10px] px-1.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
+                <span className="font-mono text-[10px] px-1.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
                   {result.areasToReview.length}
                 </span>
               )}
@@ -340,9 +340,9 @@ export const DocumentInsightsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('lawyer')}
-              className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
                 activeTab === 'lawyer'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >

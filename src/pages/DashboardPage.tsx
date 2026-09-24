@@ -34,11 +34,11 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-[#101010] p-6 sm:p-7">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.045] backdrop-blur-md p-6 sm:p-7 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
+              <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               <span>Workspace Overview</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
@@ -69,11 +69,11 @@ export const DashboardPage: React.FC = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
           <Card
-            className="hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group p-4"
+            className="hover:border-blue-500/40 transition-all cursor-pointer group p-4"
             onClick={() => navigate('/documents')}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 flex items-center justify-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <Upload className="h-4 w-4" />
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-neutral-400 dark:text-[#666666] group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
@@ -85,11 +85,11 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           <Card
-            className="hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group p-4"
+            className="hover:border-blue-500/40 transition-all cursor-pointer group p-4"
             onClick={() => navigate('/chat')}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 flex items-center justify-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <MessageSquare className="h-4 w-4" />
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-neutral-400 dark:text-[#666666] group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
@@ -101,11 +101,11 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           <Card
-            className="hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group p-4"
+            className="hover:border-blue-500/40 transition-all cursor-pointer group p-4"
             onClick={() => navigate('/compare')}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 flex items-center justify-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <GitCompare className="h-4 w-4" />
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-neutral-400 dark:text-[#666666] group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
@@ -117,11 +117,11 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           <Card
-            className="hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group p-4"
+            className="hover:border-blue-500/40 transition-all cursor-pointer group p-4"
             onClick={() => navigate('/insights')}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 flex items-center justify-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <Sparkles className="h-4 w-4" />
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-neutral-400 dark:text-[#666666] group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
@@ -133,11 +133,11 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           <Card
-            className="hover:border-neutral-300 dark:hover:border-white/20 transition-all cursor-pointer group p-4"
+            className="hover:border-blue-500/40 transition-all cursor-pointer group p-4"
             onClick={() => navigate('/unified')}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-neutral-200 flex items-center justify-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="h-9 w-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <Layers className="h-4 w-4" />
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-neutral-400 dark:text-[#666666] group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />

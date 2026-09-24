@@ -44,9 +44,9 @@ export const AnalysisOverview: React.FC<AnalysisOverviewProps> = ({ analysis }) 
   return (
     <div className="space-y-4">
       {/* Header Badges & Model Meta */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-white/60 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-xs shadow-xs">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400">
+          <div className="p-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
             <FileCheck className="h-4 w-4" />
           </div>
           <div>
@@ -60,7 +60,7 @@ export const AnalysisOverview: React.FC<AnalysisOverviewProps> = ({ analysis }) 
         <div className="flex items-center gap-2.5 flex-wrap">
           {getConfidenceBadge(result.confidence)}
 
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono bg-slate-100/70 dark:bg-white/[0.06] text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-white/10">
             <Cpu className="h-3 w-3 text-blue-500" /> {analysis.model}
           </span>
 
@@ -71,7 +71,7 @@ export const AnalysisOverview: React.FC<AnalysisOverviewProps> = ({ analysis }) 
       </div>
 
       {/* Executive Summary Card */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+      <div className="p-5 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
           <Sparkles className="h-3.5 w-3.5" />
           <span>Executive Plain-Language Summary</span>

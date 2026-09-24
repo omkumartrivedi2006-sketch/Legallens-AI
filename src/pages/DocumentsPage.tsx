@@ -132,7 +132,7 @@ export const DocumentsPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search documents by file name..."
-              className="w-full pl-9 pr-8 py-1.5 rounded-lg text-xs bg-neutral-50 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+              className="w-full pl-9 pr-8 py-1.5 rounded-xl text-xs bg-white/60 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
             />
             {searchQuery && (
               <button
@@ -152,7 +152,7 @@ export const DocumentsPage: React.FC = () => {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as 'all' | SupportedDocumentType)}
-                className="py-1.5 px-2.5 rounded-lg text-xs bg-neutral-50 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="py-1.5 px-2.5 rounded-xl text-xs bg-white/60 dark:bg-[#0D0D0D] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="all">All Formats</option>
                 <option value="pdf">PDF</option>
@@ -165,7 +165,7 @@ export const DocumentsPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as 'all' | ProcessingStatus)}
-              className="py-1.5 px-2.5 rounded-lg text-xs bg-neutral-50 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="py-1.5 px-2.5 rounded-xl text-xs bg-white/60 dark:bg-[#0D0D0D] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="all">All Statuses</option>
               <option value="ready">Ready</option>
@@ -179,7 +179,7 @@ export const DocumentsPage: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as DocumentSortOption)}
-                className="py-1.5 px-2.5 rounded-lg text-xs bg-neutral-50 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="py-1.5 px-2.5 rounded-xl text-xs bg-white/60 dark:bg-[#0D0D0D] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-neutral-700 dark:text-[#B8B8B8] focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -189,12 +189,12 @@ export const DocumentsPage: React.FC = () => {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center p-0.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-[#151515]">
+            <div className="flex items-center p-0.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-white/[0.045] backdrop-blur-md">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-colors ${
+                className={`p-1.5 rounded-lg transition-colors ${
                   viewMode === 'grid'
-                    ? 'bg-white dark:bg-[#242424] text-blue-600 dark:text-blue-400 shadow-xs'
+                    ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs'
                     : 'text-neutral-400 hover:text-neutral-700 dark:text-[#858585] dark:hover:text-white'
                 }`}
                 title="Grid view"
@@ -203,9 +203,9 @@ export const DocumentsPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-md transition-colors ${
+                className={`p-1.5 rounded-lg transition-colors ${
                   viewMode === 'list'
-                    ? 'bg-white dark:bg-[#242424] text-blue-600 dark:text-blue-400 shadow-xs'
+                    ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs'
                     : 'text-neutral-400 hover:text-neutral-700 dark:text-[#858585] dark:hover:text-white'
                 }`}
                 title="List view"

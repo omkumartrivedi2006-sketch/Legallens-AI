@@ -19,7 +19,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-5 border-b border-neutral-200 dark:border-white/10 mb-6',
+        'flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-5 border-b border-slate-200/80 dark:border-white/10 mb-6',
         className
       )}
     >
@@ -29,7 +29,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {title}
           </h1>
           {badge && (
-            <span className="inline-flex items-center rounded-md bg-neutral-100 dark:bg-[#151515] px-2 py-0.5 text-xs font-medium text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
+            <span className="inline-flex items-center rounded-full bg-blue-500/10 dark:bg-blue-500/15 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-500/20 backdrop-blur-xs">
               {badge}
             </span>
           )}

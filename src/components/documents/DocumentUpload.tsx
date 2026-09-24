@@ -83,10 +83,10 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !isProcessingLocal && fileInputRef.current?.click()}
-        className={`relative group cursor-pointer border-2 border-dashed rounded-xl p-8 text-center transition-all duration-150 ${
+        className={`relative group cursor-pointer border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all duration-200 ${
           isDragging
-            ? 'border-blue-500 bg-blue-50/50 dark:bg-white/[0.04]'
-            : 'border-neutral-300 dark:border-white/15 hover:border-blue-500 dark:hover:border-blue-400 bg-neutral-50 dark:bg-[#0A0A0A] hover:bg-neutral-100/50 dark:hover:bg-[#101010]'
+            ? 'border-blue-500 bg-blue-500/10 dark:bg-blue-500/15 backdrop-blur-md shadow-[0_0_25px_rgba(37,99,235,0.2)]'
+            : 'border-slate-300/80 dark:border-white/15 hover:border-blue-500/80 dark:hover:border-blue-400/80 bg-white/60 dark:bg-white/[0.035] hover:bg-white/80 dark:hover:bg-white/[0.06] backdrop-blur-md hover:shadow-[0_0_20px_rgba(37,99,235,0.1)]'
         }`}
       >
         <input
@@ -100,13 +100,13 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
         <div className="flex flex-col items-center justify-center space-y-3">
           <div
-            className={`p-3.5 rounded-xl transition-transform duration-150 group-hover:scale-105 ${
+            className={`p-3.5 rounded-2xl transition-transform duration-200 group-hover:scale-105 ${
               isDragging
                 ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-white/10'
+                : 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25'
             }`}
           >
-            <UploadCloud className="h-6 w-6 text-blue-600 dark:text-blue-500" />
+            <UploadCloud className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
 
           <div>
@@ -123,14 +123,14 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           </div>
 
           <div className="flex items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
-              <FileText className="h-3 w-3" /> PDF
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100/70 dark:bg-white/[0.06] text-neutral-700 dark:text-[#B8B8B8] border border-slate-200/80 dark:border-white/10">
+              <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" /> PDF
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
-              <FileCheck2 className="h-3 w-3" /> DOCX
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100/70 dark:bg-white/[0.06] text-neutral-700 dark:text-[#B8B8B8] border border-slate-200/80 dark:border-white/10">
+              <FileCheck2 className="h-3 w-3 text-blue-600 dark:text-blue-400" /> DOCX
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
-              <FileCode className="h-3 w-3" /> TXT
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100/70 dark:bg-white/[0.06] text-neutral-700 dark:text-[#B8B8B8] border border-slate-200/80 dark:border-white/10">
+              <FileCode className="h-3 w-3 text-blue-600 dark:text-blue-400" /> TXT
             </span>
           </div>
         </div>
@@ -161,7 +161,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           {activeUploadList.map((upload) => (
             <div
               key={upload.documentId}
-              className="p-3.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-xs"
+              className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.045] backdrop-blur-md shadow-xs"
             >
               <div className="flex items-center justify-between text-xs mb-2">
                 <div className="flex items-center gap-2 max-w-[70%]">

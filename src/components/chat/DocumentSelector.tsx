@@ -98,10 +98,10 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
           <div
             key={doc.id}
             onClick={() => onSelectDocument(doc)}
-            className="group p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-4"
+            className="group p-4 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 hover:border-blue-500/40 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-4"
           >
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0 group-hover:scale-105 transition-transform">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0 group-hover:scale-105 transition-transform">
                 {getFileIcon(doc.fileType)}
               </div>
 
@@ -136,7 +136,7 @@ export const DocumentSelector: React.FC<DocumentSelectorProps> = ({
                 Start Chat
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
-              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 sm:hidden">
+              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 sm:hidden">
                 <ArrowRight className="h-4 w-4" />
               </div>
             </div>

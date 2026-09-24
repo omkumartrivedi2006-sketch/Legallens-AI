@@ -111,7 +111,7 @@ export const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-6.5rem)] flex rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+    <div className="h-[calc(100vh-6.5rem)] flex rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.045] backdrop-blur-md overflow-hidden shadow-sm">
       {/* Left: Conversation History Sidebar */}
       <ConversationSidebar
         conversations={conversations}
@@ -125,7 +125,7 @@ export const ChatPage: React.FC = () => {
       />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full bg-slate-50/30 dark:bg-slate-950/20">
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-slate-50/20 dark:bg-transparent">
         {/* Header */}
         <ChatHeader
           document={activeDocument}
@@ -134,7 +134,7 @@ export const ChatPage: React.FC = () => {
         />
 
         {/* Disclaimer Strip */}
-        <div className="px-4 py-2 bg-white/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/60">
+        <div className="px-4 py-2 bg-white/40 dark:bg-white/[0.02] border-b border-slate-200/60 dark:border-white/5 backdrop-blur-xs">
           <LegalChatDisclaimer />
         </div>
 
@@ -162,10 +162,10 @@ export const ChatPage: React.FC = () => {
           {/* Real-time Thinking Indicator */}
           {isSending && (
             <div className="flex items-center gap-3 my-4 animate-in fade-in">
-              <div className="h-7 w-7 rounded-full bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center shrink-0">
+              <div className="h-7 w-7 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               </div>
-              <div className="px-4 py-3 rounded-2xl rounded-tl-xs bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <div className="px-4 py-3 rounded-2xl rounded-tl-xs bg-white/80 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 backdrop-blur-md shadow-xs text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
                 <span>Reading document chunks and grounding response...</span>
               </div>

@@ -40,13 +40,30 @@ app.use(express.json({ limit: '50mb' }));
 // Mount API routes
 app.use('/api', aiRouter);
 
+// Serve static frontend in production
+const distPath = path.join(rootDir, 'dist');
+app.use(express.static(distPath));
+
+// Fallback to index.html for client-side routing (excluding /api)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'), (err) => {
+    if (err) {
+      next();
+    }
+  });
+});
+
 // Global Production Error Handler with Safe Reference IDs
 app.use(productionErrorHandler);
 
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[LegalLens AI] Server running on http://127.0.0.1:${PORT}`);
-  console.log(`[LegalLens AI] GenAI model: ${process.env.GEMINI_MODEL || 'gemini-3.6-flash'}`);
+  console.log(`[LegalLens AI] Server running on http://0.0.0.0:${PORT}`);
+  console.log(`[LegalLens AI] Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`[LegalLens AI] GenAI model: ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}`);
   console.log(`[LegalLens AI] API key configured: ${Boolean(process.env.GEMINI_API_KEY)}`);
 });
 

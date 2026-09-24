@@ -122,12 +122,12 @@ export const ComparisonDetailsPage: React.FC = () => {
 
   if (error || !comparison) {
     return (
-      <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-4 max-w-lg mx-auto mt-12">
-        <div className="h-12 w-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+      <div className="p-8 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-center space-y-4 max-w-lg mx-auto mt-12 shadow-sm">
+        <div className="h-12 w-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-500/20">
           <AlertCircle className="h-6 w-6" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white">
             Comparison Report Unavailable
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -168,13 +168,13 @@ export const ComparisonDetailsPage: React.FC = () => {
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+          <div className="flex items-center p-1 bg-slate-200/50 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10 rounded-xl backdrop-blur-xs">
             <button
               type="button"
               onClick={() => setViewMode('side-by-side')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'side-by-side'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -186,7 +186,7 @@ export const ComparisonDetailsPage: React.FC = () => {
               onClick={() => setViewMode('breakdown')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'breakdown'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -199,7 +199,7 @@ export const ComparisonDetailsPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setShowDeleteModal(true)}
-            className="text-xs h-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/60"
+            className="text-xs h-9 text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/20"
           >
             <Trash2 className="h-3.5 w-3.5 mr-1" />
             <span>Delete</span>
@@ -243,15 +243,15 @@ export const ComparisonDetailsPage: React.FC = () => {
         unchangedSections={comparison.result.unchangedSections}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal (Glass Modal) */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-sm rounded-2xl bg-white/85 dark:bg-[#0D0D0D]/90 backdrop-blur-xl p-6 shadow-2xl border border-slate-200/80 dark:border-white/10 space-y-4">
+            <div className="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-500/20">
               <Trash2 className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                 Delete Comparison Record?
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">

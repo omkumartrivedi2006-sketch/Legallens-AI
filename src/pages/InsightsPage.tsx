@@ -44,11 +44,11 @@ export const InsightsPage: React.FC = () => {
 
       {/* Feature Value Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+        <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 space-y-2 shadow-xs">
+          <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
             <FileCheck2 className="h-4 w-4" />
           </div>
-          <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
             Affirmative Obligations
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -56,11 +56,11 @@ export const InsightsPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+        <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 space-y-2 shadow-xs">
+          <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
             <Calendar className="h-4 w-4" />
           </div>
-          <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
             Grounded Deadlines
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -68,11 +68,11 @@ export const InsightsPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+        <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 space-y-2 shadow-xs">
+          <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center">
             <CheckSquare className="h-4 w-4" />
           </div>
-          <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider">
             Interactive Checklist
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400">

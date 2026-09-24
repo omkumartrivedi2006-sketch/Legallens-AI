@@ -144,7 +144,7 @@ export const RegisterPage: React.FC = () => {
                   placeholder="e.g. Alex Morgan"
                   disabled={isLoading || isGoogleLoading}
                   required
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                 />
               </div>
 
@@ -165,7 +165,7 @@ export const RegisterPage: React.FC = () => {
                   placeholder="name@company.com"
                   disabled={isLoading || isGoogleLoading}
                   required
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                 />
               </div>
 
@@ -187,7 +187,7 @@ export const RegisterPage: React.FC = () => {
                     placeholder="At least 6 characters"
                     disabled={isLoading || isGoogleLoading}
                     required
-                    className="w-full px-3.5 py-2 pr-10 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 pr-10 text-sm rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                   />
                   <button
                     type="button"
@@ -219,7 +219,7 @@ export const RegisterPage: React.FC = () => {
                     placeholder="Repeat your password"
                     disabled={isLoading || isGoogleLoading}
                     required
-                    className="w-full px-3.5 py-2 pr-10 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 pr-10 text-sm rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all"
                   />
                   <button
                     type="button"
@@ -255,10 +255,10 @@ export const RegisterPage: React.FC = () => {
             {/* Social Authentication Divider */}
             <div className="mt-5 relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <div className="w-full border-t border-slate-200/60 dark:border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-slate-900 px-2 text-slate-400 dark:text-slate-500">
+                <span className="bg-white/80 dark:bg-[#0D0D0D] px-2 text-slate-400 dark:text-slate-500">
                   Or continue with
                 </span>
               </div>
@@ -270,7 +270,7 @@ export const RegisterPage: React.FC = () => {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading || isGoogleLoading}
-                className="w-full inline-flex items-center justify-center gap-2.5 px-4 py-2 text-xs font-semibold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors disabled:opacity-50"
+                className="w-full inline-flex items-center justify-center gap-2.5 px-4 py-2.5 text-xs font-semibold rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/60 dark:bg-white/[0.04] backdrop-blur-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-white/[0.08] transition-colors disabled:opacity-50 shadow-xs"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -295,7 +295,7 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             {/* Switch to login */}
-            <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-6 pt-5 border-t border-slate-200/60 dark:border-white/10 text-center text-xs text-slate-500 dark:text-slate-400">
               Already have an account?{' '}
               <Link
                 to="/login"

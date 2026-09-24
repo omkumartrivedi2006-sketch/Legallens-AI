@@ -66,12 +66,12 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
   return (
     <div
       onClick={() => navigate(`/documents/${document.id}`)}
-      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-xs hover:border-neutral-300 dark:hover:border-white/20 transition-all duration-150 cursor-pointer"
+      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.045] backdrop-blur-md shadow-xs hover:border-blue-500/40 dark:hover:border-white/20 hover:shadow-md transition-all duration-200 cursor-pointer"
     >
       <div>
         {/* Header with Icon and Status */}
         <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="p-2 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-150">
+          <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform duration-150">
             {getFileIcon()}
           </div>
           <DocumentStatusBadge

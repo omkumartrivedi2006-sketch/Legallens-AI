@@ -67,13 +67,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Sidebar container */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0A0A0A] transition-transform duration-200 ease-in-out lg:translate-x-0',
+          'fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-[rgba(8,8,8,0.82)] backdrop-blur-xl transition-transform duration-200 ease-in-out lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
         aria-label="Dashboard Sidebar"
       >
         {/* Brand header */}
-        <div className="flex h-14 items-center justify-between px-5 border-b border-neutral-200 dark:border-white/10">
+        <div className="flex h-14 items-center justify-between px-5 border-b border-slate-200/80 dark:border-white/10">
           <Link
             to="/dashboard"
             className="flex items-center gap-2.5 font-bold text-base text-neutral-900 dark:text-white"
@@ -112,25 +112,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 }}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150',
                     isActive
-                      ? 'bg-neutral-100 text-neutral-950 font-semibold dark:bg-[#151515] dark:text-white dark:border dark:border-white/10'
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 dark:text-[#B8B8B8] dark:hover:text-white dark:hover:bg-white/[0.04]'
+                      ? 'bg-blue-500/10 text-blue-700 font-semibold border border-blue-500/25 dark:bg-blue-600/15 dark:text-blue-300 dark:border-blue-500/30'
+                      : 'text-neutral-600 hover:text-neutral-950 hover:bg-slate-200/50 dark:text-[#B8B8B8] dark:hover:text-white dark:hover:bg-white/[0.045]'
                   )
                 }
               >
-                <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-[#858585]" />
-                <span>{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <Icon className={cn('h-4 w-4 shrink-0 transition-colors', isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-500 dark:text-[#858585]')} />
+                    <span>{item.label}</span>
+                  </>
+                )}
               </NavLink>
             );
           })}
         </div>
 
         {/* User Card & Sign Out at bottom */}
-        <div className="p-3 border-t border-neutral-200 dark:border-white/10">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-50 dark:bg-[#101010] border border-neutral-200/80 dark:border-white/10">
+        <div className="p-3 border-t border-slate-200/80 dark:border-white/10">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-white/60 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/10 backdrop-blur-md">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-semibold text-xs">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-semibold text-xs shadow-xs">
                 {initials}
               </div>
               <div className="min-w-0">

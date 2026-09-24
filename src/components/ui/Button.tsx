@@ -29,15 +29,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-xs border border-blue-600/20',
+        'bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-xs border border-blue-500/30 backdrop-blur-xs',
       secondary:
-        'bg-neutral-100 text-neutral-900 border border-neutral-200 hover:bg-neutral-200/70 dark:bg-neutral-900 dark:text-neutral-100 dark:border-white/10 dark:hover:bg-neutral-800',
+        'bg-white/60 text-neutral-900 border border-slate-200/80 hover:bg-white/90 dark:bg-white/[0.045] dark:text-neutral-100 dark:border-white/10 dark:hover:bg-white/[0.08] dark:hover:border-white/20 backdrop-blur-md shadow-xs',
       outline:
-        'bg-transparent border border-neutral-300 text-neutral-800 hover:bg-neutral-50 hover:text-neutral-950 dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06] dark:hover:border-white/25',
+        'bg-transparent border border-slate-300/80 text-neutral-800 hover:bg-white/60 hover:text-neutral-950 dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06] dark:hover:border-white/25 backdrop-blur-xs',
       ghost:
-        'bg-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06]',
+        'bg-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-200/50 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06]',
       danger:
-        'bg-rose-600 text-white hover:bg-rose-700 shadow-xs dark:bg-rose-600/90 dark:hover:bg-rose-600',
+        'bg-rose-600 text-white hover:bg-rose-700 shadow-xs border border-rose-500/30 dark:bg-rose-600/90 dark:hover:bg-rose-600',
     };
 
     const sizes = {

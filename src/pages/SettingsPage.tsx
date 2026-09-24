@@ -49,19 +49,19 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={() => setTheme('light')}
               className={cn(
-                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all',
+                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all backdrop-blur-xs',
                 theme === 'light'
-                  ? 'border-blue-600 bg-blue-50/40 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-blue-600/30'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  ? 'border-blue-500/50 bg-blue-500/10 text-slate-900 dark:text-white ring-1 ring-blue-500/30'
+                  : 'border-slate-200/80 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] hover:border-blue-500/30'
               )}
             >
-              <div className="h-10 w-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 shadow-sm">
+              <div className="h-10 w-10 rounded-lg bg-white dark:bg-white/10 border border-slate-200/80 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-slate-300 shadow-xs">
                 <Sun className="h-5 w-5" />
               </div>
               <div>
                 <p className="text-sm font-semibold">Light Theme</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Clean neutral light surfaces
+                  Clean neutral light surfaces with glass blur
                 </p>
               </div>
             </button>
@@ -70,19 +70,19 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={() => setTheme('dark')}
               className={cn(
-                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all',
+                'flex items-center gap-3 p-4 rounded-xl border text-left transition-all backdrop-blur-xs',
                 theme === 'dark'
-                  ? 'border-blue-600 bg-slate-100/50 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-blue-600/30'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  ? 'border-blue-500/50 bg-blue-500/10 text-slate-900 dark:text-white ring-1 ring-blue-500/30'
+                  : 'border-slate-200/80 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] hover:border-blue-500/30'
               )}
             >
-              <div className="h-10 w-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 shadow-sm">
+              <div className="h-10 w-10 rounded-lg bg-slate-900 dark:bg-white/10 border border-slate-800 dark:border-white/10 flex items-center justify-center text-blue-400 shadow-xs">
                 <Moon className="h-5 w-5" />
               </div>
               <div>
                 <p className="text-sm font-semibold">Dark Theme</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  High-contrast neutral dark mode
+                  True black neutral glass mode
                 </p>
               </div>
             </button>
@@ -96,7 +96,7 @@ export const SettingsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <User className="h-4 w-4 text-blue-600" />
+                <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span>Account Profile</span>
               </CardTitle>
               <CardDescription className="text-xs">
@@ -115,7 +115,7 @@ export const SettingsPage: React.FC = () => {
               <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                 Display Name
               </label>
-              <div className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold text-slate-900 dark:text-slate-100">
+              <div className="px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-xs font-semibold text-slate-900 dark:text-slate-100">
                 {displayName}
               </div>
             </div>
@@ -124,10 +124,10 @@ export const SettingsPage: React.FC = () => {
               <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                 Email Address
               </label>
-              <div className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center justify-between">
+              <div className="px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center justify-between">
                 <span>{email}</span>
                 {isEmailVerified ? (
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
                     <CheckCircle2 className="h-3 w-3" /> Verified
                   </span>
                 ) : (
@@ -140,14 +140,14 @@ export const SettingsPage: React.FC = () => {
               <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                 Firebase User ID (UID)
               </label>
-              <div className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-xs font-mono text-slate-600 dark:text-slate-400 truncate">
+              <div className="px-3.5 py-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04] backdrop-blur-xs text-xs font-mono text-slate-600 dark:text-slate-400 truncate">
                 {uid}
               </div>
             </div>
           </div>
 
-          <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-            <span className="text-xs text-slate-500">
+          <div className="pt-2 flex items-center justify-between border-t border-slate-200/60 dark:border-white/10">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               End your active session on this browser
             </span>
             <Button
@@ -155,7 +155,7 @@ export const SettingsPage: React.FC = () => {
               size="sm"
               onClick={handleLogout}
               leftIcon={<LogOut className="h-3.5 w-3.5" />}
-              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40 border-rose-200 dark:border-rose-900/60"
+              className="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 dark:text-rose-400 border-rose-500/20"
             >
               Sign Out
             </Button>
@@ -167,7 +167,7 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Key className="h-4 w-4 text-blue-600" />
+            <Key className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <span>Production System & Integration Status</span>
           </CardTitle>
           <CardDescription className="text-xs">
@@ -176,40 +176,40 @@ export const SettingsPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2.5 text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Firebase Authentication</span>
-                <p className="text-[11px] text-slate-500">JWT token validation with Bearer token security</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">JWT token validation with Bearer token security</p>
               </div>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Active & Isolated
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Firebase Cloud Storage</span>
-                <p className="text-[11px] text-slate-500">Versioned storage paths with 25MB type-checked rules</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Versioned storage paths with 25MB type-checked rules</p>
               </div>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Enforced
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Google Gemini LLM</span>
-                <p className="text-[11px] text-slate-500">Structured JSON schema output via Gemini 2.5 Flash</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Structured JSON schema output via Gemini 2.5 Flash</p>
               </div>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Online
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">API Rate Limiter & Error Guard</span>
-                <p className="text-[11px] text-slate-500">Sliding-window quota limiter with safe reference IDs (ERR-XXXXXX)</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Sliding-window quota limiter with safe reference IDs (ERR-XXXXXX)</p>
               </div>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Protected
@@ -223,7 +223,7 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <span>Privacy & Document Protection Policy</span>
           </CardTitle>
           <CardDescription className="text-xs">
@@ -231,29 +231,29 @@ export const SettingsPage: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 space-y-1.5">
             <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Strict Two-User Account Isolation
             </p>
             <p>
-              Every document, version, extracted text snippet, and AI analysis is partitioned under your specific Firebase UID (<code className="font-mono text-[11px] bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">{uid}</code>). Firestore and Cloud Storage security rules strictly prohibit any other authenticated or unauthenticated user from reading or modifying your data.
+              Every document, version, extracted text snippet, and AI analysis is partitioned under your specific Firebase UID (<code className="font-mono text-[11px] bg-slate-200/70 dark:bg-white/10 px-1 py-0.5 rounded border border-slate-200/60 dark:border-white/5">{uid}</code>). Firestore and Cloud Storage security rules strictly prohibit any other authenticated or unauthenticated user from reading or modifying your data.
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 space-y-1.5">
             <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Privacy-First AI Processing
             </p>
             <p>
-              Document content is sent to Google Gemini only during your active analysis, Q&A, comparison, or insight generation requests. All uploaded content is treated as untrusted data wrapped in security sandboxes (<code className="font-mono text-[11px] bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">&lt;untrusted_documents&gt;</code>) to prevent prompt injection and unauthorized instruction execution.
+              Document content is sent to Google Gemini only during your active analysis, Q&A, comparison, or insight generation requests. All uploaded content is treated as untrusted data wrapped in security sandboxes (<code className="font-mono text-[11px] bg-slate-200/70 dark:bg-white/10 px-1 py-0.5 rounded border border-slate-200/60 dark:border-white/5">&lt;untrusted_documents&gt;</code>) to prevent prompt injection and unauthorized instruction execution.
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 space-y-1.5">
             <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Data Retention & Deletion
             </p>
             <p>

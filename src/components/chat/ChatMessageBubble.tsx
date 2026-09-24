@@ -73,13 +73,13 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
 
       <div className="max-w-[92%] sm:max-w-2xl w-full space-y-2">
         {/* Assistant Message Card */}
-        <div className="rounded-2xl rounded-tl-xs bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs text-xs sm:text-sm text-slate-800 dark:text-slate-200 space-y-3">
+        <div className="rounded-2xl rounded-tl-xs bg-white/80 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/10 backdrop-blur-md p-4 sm:p-5 shadow-xs text-xs sm:text-sm text-slate-800 dark:text-slate-200 space-y-3">
           {/* Header row with badge & copy */}
-          <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800/60">
+          <div className="flex items-center justify-between pb-1.5 border-b border-slate-200/60 dark:border-white/5">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-900 dark:text-white">
               <span>LegalLens AI</span>
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                <ShieldCheck className="h-2.5 w-2.5 text-blue-500" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                <ShieldCheck className="h-3 w-3 text-blue-500" />
                 Grounded
               </span>
             </div>
@@ -89,12 +89,12 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
                 type="button"
                 onClick={handleCopy}
                 aria-label="Copy answer to clipboard"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors"
               >
                 {copied ? (
                   <>
-                    <Check className="h-3 w-3 text-emerald-600" />
-                    <span className="text-emerald-600 font-semibold">Copied</span>
+                    <Check className="h-3 w-3 text-emerald-500" />
+                    <span className="text-emerald-500 font-semibold">Copied</span>
                   </>
                 ) : (
                   <>
@@ -109,7 +109,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
                   type="button"
                   onClick={onRetry}
                   aria-label="Retry answer"
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors"
                 >
                   <RotateCcw className="h-3 w-3" />
                   <span>Retry</span>
@@ -125,7 +125,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
 
           {/* Sources Section */}
           {message.sources && message.sources.length > 0 && (
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="pt-2 border-t border-slate-200/60 dark:border-white/5">
               <button
                 type="button"
                 onClick={() => setExpandedSources(!expandedSources)}
@@ -147,7 +147,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
                   {message.sources.map((source: ChatSource, idx: number) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 text-xs space-y-1"
+                      className="p-2.5 rounded-xl bg-slate-50/60 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between font-semibold text-slate-900 dark:text-white">
                         <span className="truncate">
@@ -160,7 +160,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
                         )}
                       </div>
                       {source.textSnippet && (
-                        <p className="text-[11px] text-slate-600 dark:text-slate-300 font-serif italic pl-2 border-l-2 border-blue-400/80 dark:border-blue-500/80">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 font-serif italic pl-2 border-l-2 border-blue-500/80">
                           "{source.textSnippet}"
                         </p>
                       )}

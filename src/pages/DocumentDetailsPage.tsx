@@ -315,7 +315,7 @@ export const DocumentDetailsPage: React.FC = () => {
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 shrink-0">
+              <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 shrink-0">
                 {getFileIcon(document.fileType)}
               </div>
 
@@ -329,7 +329,7 @@ export const DocumentDetailsPage: React.FC = () => {
                     errorMessage={document.errorMessage}
                   />
                   {latestAnalysis && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/25 backdrop-blur-xs">
                       <Sparkles className="h-3 w-3 text-blue-500" /> AI Analyzed
                     </span>
                   )}
@@ -351,7 +351,7 @@ export const DocumentDetailsPage: React.FC = () => {
             </div>
 
             {/* Metadata Summary Pill */}
-            <div className="flex items-center gap-3 self-start md:self-auto p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-xs">
+            <div className="flex items-center gap-3 self-start md:self-auto p-3 rounded-2xl bg-white/60 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-xs shadow-xs">
               {document.pageCount && document.pageCount > 0 && (
                 <div className="text-center px-2">
                   <p className="font-bold text-slate-900 dark:text-white">{document.pageCount}</p>
@@ -359,15 +359,15 @@ export const DocumentDetailsPage: React.FC = () => {
                 </div>
               )}
               {document.wordCount !== undefined && (
-                <div className="text-center px-2 border-l border-slate-200 dark:border-slate-700">
+                <div className="text-center px-2 border-l border-slate-200/80 dark:border-white/10">
                   <p className="font-bold text-slate-900 dark:text-white">
                     {document.wordCount.toLocaleString()}
                   </p>
                   <p className="text-[11px] text-slate-400">Words</p>
                 </div>
               )}
-              <div className="text-center px-2 border-l border-slate-200 dark:border-slate-700">
-                <p className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <div className="text-center px-2 border-l border-slate-200/80 dark:border-white/10">
+                <p className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   Isolated
                 </p>
@@ -379,13 +379,13 @@ export const DocumentDetailsPage: React.FC = () => {
       </Card>
 
       {/* Tabs Switcher: AI Analysis vs Extracted Text */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-px">
+      <div className="flex items-center gap-2 border-b border-slate-200/80 dark:border-white/10 pb-px">
         <button
           onClick={() => setActiveTab('analysis')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 rounded-t-xl transition-all ${
             activeTab === 'analysis'
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-500/[0.05]'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/40 dark:hover:bg-white/[0.03]'
           }`}
         >
           <Sparkles className="h-3.5 w-3.5" />

@@ -16,17 +16,17 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const variants = {
     default:
-      'bg-neutral-100 text-neutral-700 dark:bg-[#151515] dark:text-[#B8B8B8] dark:border dark:border-white/10',
+      'bg-slate-100/70 text-neutral-700 border border-slate-200/80 dark:bg-white/[0.045] dark:text-[#B8B8B8] dark:border-white/10 backdrop-blur-xs',
     primary:
-      'bg-blue-50 text-blue-700 border border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/60',
+      'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/25 backdrop-blur-xs',
     success:
-      'bg-emerald-50 text-emerald-800 border border-emerald-200/80 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800/50',
+      'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25 backdrop-blur-xs',
     warning:
-      'bg-amber-50 text-amber-800 border border-amber-200/80 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800/50',
+      'bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 backdrop-blur-xs',
     danger:
-      'bg-rose-50 text-rose-800 border border-rose-200/80 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-800/50',
+      'bg-rose-500/10 text-rose-800 dark:text-rose-300 border border-rose-500/25 backdrop-blur-xs',
     outline:
-      'border border-neutral-300 text-neutral-700 dark:border-white/15 dark:text-[#B8B8B8]',
+      'border border-slate-300/80 text-neutral-700 dark:border-white/15 dark:text-[#B8B8B8] backdrop-blur-xs',
   };
 
   return (

@@ -43,20 +43,20 @@ export const DocumentList: React.FC<DocumentListProps> = ({ documents, onDeleteR
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'pdf':
-        return <FileText className="h-4 w-4 text-red-600 dark:text-red-400" />;
+        return <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
       case 'docx':
         return <FileCheck2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
       case 'txt':
-        return <FileCode className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
+        return <FileCode className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
       default:
-        return <FileSpreadsheet className="h-4 w-4 text-slate-500" />;
+        return <FileSpreadsheet className="h-4 w-4 text-neutral-500" />;
     }
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.045] backdrop-blur-md shadow-xs">
       <table className="w-full text-left text-xs">
-        <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400">
+        <thead className="border-b border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-white/[0.02] text-slate-500 dark:text-[#858585]">
           <tr>
             <th className="py-3.5 px-4 font-medium">Document Name</th>
             <th className="py-3.5 px-3 font-medium">Type</th>
@@ -67,7 +67,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ documents, onDeleteR
             <th className="py-3.5 px-4 font-medium text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
           {documents.map((doc) => {
             const formattedDate = new Date(doc.uploadedAt).toLocaleDateString('en-US', {
               month: 'short',
@@ -79,12 +79,12 @@ export const DocumentList: React.FC<DocumentListProps> = ({ documents, onDeleteR
               <tr
                 key={doc.id}
                 onClick={() => navigate(`/documents/${doc.id}`)}
-                className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                className="hover:bg-blue-500/[0.04] dark:hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
                 {/* File Name */}
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2.5 max-w-xs md:max-w-md">
-                    <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0">
+                    <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 shrink-0">
                       {getFileIcon(doc.fileType)}
                     </div>
                     <span

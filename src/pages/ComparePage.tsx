@@ -122,13 +122,13 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
         />
 
         {/* Tab Switcher */}
-        <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl self-start sm:self-auto shrink-0">
+        <div className="flex items-center p-1 bg-slate-200/50 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10 rounded-xl backdrop-blur-xs self-start sm:self-auto shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('compare')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'compare'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -140,7 +140,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
             onClick={() => setActiveTab('history')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'history'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -161,7 +161,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
         <div className="space-y-6">
           {/* Error Banner */}
           {error && (
-            <div className="p-4 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/70 dark:bg-rose-950/30 flex items-start justify-between gap-3 text-xs text-rose-800 dark:text-rose-200 animate-in fade-in">
+            <div className="p-4 rounded-2xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-xs flex items-start justify-between gap-3 text-xs text-rose-800 dark:text-rose-200 animate-in fade-in">
               <div className="flex items-start gap-2.5">
                 <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                 <div>
@@ -180,12 +180,12 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
 
           {/* Not enough documents banner */}
           {!isLoadingDocs && readyDocuments.length < 2 && !activeComparison && (
-            <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-4">
-              <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
+            <div className="p-8 rounded-2xl bg-white/70 dark:bg-white/[0.045] backdrop-blur-md border border-slate-200/80 dark:border-white/10 text-center space-y-4">
+              <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto border border-blue-500/20">
                 <FileCode className="h-6 w-6" />
               </div>
               <div className="max-w-md mx-auto space-y-1">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                   At least 2 ready documents are required
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -222,27 +222,27 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
 
           {/* Active Comparison Results View */}
           {activeComparison && (
-            <div className="space-y-6 pt-4 border-t border-slate-200 dark:border-slate-800 animate-in fade-in">
+            <div className="space-y-6 pt-4 border-t border-slate-200/60 dark:border-white/10 animate-in fade-in">
               {/* Header Action Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Comparison Results
                   </span>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-mono bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                     ID: {activeComparison.id.slice(0, 8)}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {/* View Mode Toggle */}
-                  <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                  <div className="flex items-center p-1 bg-slate-200/50 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10 rounded-xl backdrop-blur-xs">
                     <button
                       type="button"
                       onClick={() => setViewMode('side-by-side')}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                         viewMode === 'side-by-side'
-                          ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                          ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
@@ -254,7 +254,7 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
                       onClick={() => setViewMode('breakdown')}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                         viewMode === 'breakdown'
-                          ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                          ? 'bg-white dark:bg-white/10 text-blue-600 dark:text-blue-400 shadow-xs border border-slate-200/80 dark:border-white/10'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
