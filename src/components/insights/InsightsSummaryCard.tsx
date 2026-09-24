@@ -44,8 +44,7 @@ export const InsightsSummaryCard: React.FC<InsightsSummaryCardProps> = ({
           <div className="flex items-start gap-2.5">
             <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Notice:</span> These insights were generated from an
-              earlier version of this document. Regenerate to analyze the current document.
+              <span className="font-bold">Notice:</span> These insights were generated from {insight.versionId ? `Version ${insight.versionId}` : 'an earlier revision'}. Regenerate to analyze the current document version.
             </div>
           </div>
           <Button

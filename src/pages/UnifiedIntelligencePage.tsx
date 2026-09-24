@@ -4,9 +4,6 @@ import {
   MessageSquare,
   Search,
   Calendar,
-  Sparkles,
-  FileText,
-  AlertCircle,
   Upload,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -81,11 +78,11 @@ export const UnifiedIntelligencePage: React.FC = () => {
             className={cn(
               'flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors',
               activeTab === 'chat'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             )}
           >
-            <MessageSquare className="h-3.5 w-3.5 text-blue-500" />
+            <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
             <span>AI Assistant</span>
           </button>
 
@@ -95,11 +92,11 @@ export const UnifiedIntelligencePage: React.FC = () => {
             className={cn(
               'flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors',
               activeTab === 'search'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             )}
           >
-            <Search className="h-3.5 w-3.5 text-indigo-500" />
+            <Search className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
             <span>Clause & Text Search</span>
           </button>
 
@@ -109,11 +106,11 @@ export const UnifiedIntelligencePage: React.FC = () => {
             className={cn(
               'flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors',
               activeTab === 'matrix'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             )}
           >
-            <Calendar className="h-3.5 w-3.5 text-amber-500" />
+            <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
             <span>Duties & Deadlines</span>
           </button>
         </div>

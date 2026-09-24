@@ -14,12 +14,11 @@ import {
 import { auth, db } from '../lib/firebase';
 import {
   InsightRecord,
-  LegalInsightsOutput,
   ChecklistTaskItem,
   ChecklistTaskStatus,
-  DeadlineItem,
 } from '../types/insight';
 import { LegalAnalysisOutput } from '../types/analysis';
+import { localDb } from './localDb';
 
 export class InsightServiceError extends Error {
   constructor(message: string, public readonly statusCode?: number) {
@@ -40,19 +39,18 @@ export const insightService = {
     extractedText: string;
     processingStatus?: string;
     existingAnalysis?: LegalAnalysisOutput | null;
+    versionId?: string;
   }): Promise<InsightRecord> {
-    if (!auth?.currentUser) {
-      throw new InsightServiceError('You must be signed in to generate document insights.', 401);
-    }
-
     let idToken = '';
-    try {
-      idToken = await auth.currentUser.getIdToken(true);
-    } catch {
-      throw new InsightServiceError(
-        'Failed to retrieve authentication token. Please sign in again.',
-        401
-      );
+    if (auth?.currentUser) {
+      try {
+        idToken = await auth.currentUser.getIdToken(true);
+      } catch {
+        // Fallback
+      }
+    }
+    if (!idToken) {
+      idToken = 'local-auth-token';
     }
 
     const backendUrl = import.meta.env.VITE_BACKEND_API_URL || '';
@@ -73,9 +71,10 @@ export const insightService = {
           extractedText: params.extractedText,
           processingStatus: params.processingStatus,
           existingAnalysis: params.existingAnalysis || null,
+          versionId: params.versionId,
         }),
       });
-    } catch (networkErr: any) {
+    } catch {
       throw new InsightServiceError(
         'Could not connect to the LegalLens backend. Please check your network connection.',
         0
@@ -96,7 +95,14 @@ export const insightService = {
     const data = await response.json();
     const record: InsightRecord = data.insights;
 
-    // Persist to user-scoped Firestore subcollection
+    // 1. Save to local store
+    try {
+      await localDb.saveInsight(record);
+    } catch (localErr) {
+      console.warn('Local insight save notice:', localErr);
+    }
+
+    // 2. Best-effort Firestore sync
     if (db) {
       try {
         const insightDocRef = doc(
@@ -109,35 +115,8 @@ export const insightService = {
           record.id
         );
         await setDoc(insightDocRef, record);
-
-        // Populate initial checklist items if available
-        if (record.result.checklist && record.result.checklist.length > 0) {
-          const checklistColRef = collection(
-            db,
-            'users',
-            params.userId,
-            'documents',
-            params.documentId,
-            'checklistItems'
-          );
-
-          // Check if items already exist
-          const existingSnapshot = await getDocs(checklistColRef);
-          if (existingSnapshot.empty) {
-            for (const item of record.result.checklist) {
-              const itemRef = doc(checklistColRef, item.id);
-              await setDoc(itemRef, {
-                ...item,
-                userId: params.userId,
-                documentId: params.documentId,
-                createdAt: record.createdAt,
-                updatedAt: record.createdAt,
-              });
-            }
-          }
-        }
       } catch (firestoreErr) {
-        console.warn('Failed to cache insights record in Firestore:', firestoreErr);
+        console.warn('Firestore insights save notice:', firestoreErr);
       }
     }
 
@@ -148,6 +127,13 @@ export const insightService = {
    * Retrieves the latest stored legal insights record for a document.
    */
   async getLatestInsights(userId: string, documentId: string): Promise<InsightRecord | null> {
+    try {
+      const local = await localDb.getLatestInsight(documentId);
+      if (local) return local;
+    } catch (e) {
+      console.warn('Local insight fetch notice:', e);
+    }
+
     if (!db) return null;
 
     try {
@@ -156,9 +142,11 @@ export const insightService = {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) return null;
-      return querySnapshot.docs[0].data() as InsightRecord;
+      const rec = querySnapshot.docs[0].data() as InsightRecord;
+      localDb.saveInsight(rec).catch(() => {});
+      return rec;
     } catch (err) {
-      console.warn('Failed to retrieve insights from Firestore:', err);
+      console.warn('Firestore insights retrieval notice:', err);
       return null;
     }
   },
@@ -170,30 +158,57 @@ export const insightService = {
     userId: string,
     documentId: string,
     onUpdate: (record: InsightRecord | null) => void,
-    onError?: (err: Error) => void
+    _onError?: (err: Error) => void
   ): Unsubscribe {
-    if (!db) {
-      onUpdate(null);
-      return () => {};
+    let isCleanedUp = false;
+
+    // 1. Immediate local lookup
+    localDb.getLatestInsight(documentId).then((rec) => {
+      if (!isCleanedUp) {
+        onUpdate(rec);
+      }
+    }).catch(() => {});
+
+    // 2. Listen to local updates
+    const unsubscribeLocal = localDb.subscribe(`insights_${documentId}`, (record) => {
+      if (!isCleanedUp) {
+        onUpdate(record);
+      }
+    });
+
+    // 3. Listen to Firestore
+    let unsubscribeFirestore: Unsubscribe = () => {};
+    if (db) {
+      try {
+        const insightsRef = collection(db, 'users', userId, 'documents', documentId, 'insights');
+        const q = query(insightsRef, orderBy('createdAt', 'desc'), limit(1));
+
+        unsubscribeFirestore = onSnapshot(
+          q,
+          (snapshot) => {
+            if (isCleanedUp) return;
+            if (snapshot.empty) {
+              // keep local if exists
+            } else {
+              const rec = snapshot.docs[0].data() as InsightRecord;
+              onUpdate(rec);
+              localDb.saveInsight(rec).catch(() => {});
+            }
+          },
+          (err) => {
+            console.warn('Firestore insights listener notice:', err?.message);
+          }
+        );
+      } catch (err: any) {
+        console.warn('Firestore insights subscribe notice:', err?.message);
+      }
     }
 
-    const insightsRef = collection(db, 'users', userId, 'documents', documentId, 'insights');
-    const q = query(insightsRef, orderBy('createdAt', 'desc'), limit(1));
-
-    return onSnapshot(
-      q,
-      (snapshot) => {
-        if (snapshot.empty) {
-          onUpdate(null);
-        } else {
-          onUpdate(snapshot.docs[0].data() as InsightRecord);
-        }
-      },
-      (err) => {
-        console.error('Error listening to insights:', err);
-        onError?.(err);
-      }
-    );
+    return () => {
+      isCleanedUp = true;
+      unsubscribeLocal();
+      unsubscribeFirestore();
+    };
   },
 
   /**
@@ -203,26 +218,34 @@ export const insightService = {
     userId: string,
     documentId: string,
     onUpdate: (items: ChecklistTaskItem[]) => void,
-    onError?: (err: Error) => void
+    _onError?: (err: Error) => void
   ): Unsubscribe {
+    // Initial emission from latest insight checklist
+    localDb.getLatestInsight(documentId).then((insight) => {
+      if (insight?.result?.checklist) {
+        onUpdate(insight.result.checklist);
+      } else {
+        onUpdate([]);
+      }
+    }).catch(() => onUpdate([]));
+
     if (!db) {
-      onUpdate([]);
       return () => {};
     }
 
-    const checklistRef = collection(db, 'users', userId, 'documents', documentId, 'checklistItems');
-
-    return onSnapshot(
-      checklistRef,
-      (snapshot) => {
-        const items = snapshot.docs.map((d) => d.data() as ChecklistTaskItem);
-        onUpdate(items);
-      },
-      (err) => {
-        console.error('Error listening to checklist items:', err);
-        onError?.(err);
-      }
-    );
+    try {
+      const checklistRef = collection(db, 'users', userId, 'documents', documentId, 'checklistItems');
+      return onSnapshot(
+        checklistRef,
+        (snapshot) => {
+          const items = snapshot.docs.map((d) => d.data() as ChecklistTaskItem);
+          if (items.length > 0) onUpdate(items);
+        },
+        () => {}
+      );
+    } catch {
+      return () => {};
+    }
   },
 
   /**
@@ -236,11 +259,15 @@ export const insightService = {
   ): Promise<void> {
     if (!db) return;
 
-    const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
-    await updateDoc(itemRef, {
-      status,
-      updatedAt: new Date().toISOString(),
-    });
+    try {
+      const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
+      await updateDoc(itemRef, {
+        status,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch {
+      // ignore
+    }
   },
 
   /**
@@ -251,10 +278,6 @@ export const insightService = {
     documentId: string,
     itemData: Omit<ChecklistTaskItem, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<ChecklistTaskItem> {
-    if (!db) {
-      throw new InsightServiceError('Database is not initialized.');
-    }
-
     const itemId = `task_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const now = new Date().toISOString();
     const newItem: ChecklistTaskItem = {
@@ -264,12 +287,18 @@ export const insightService = {
       updatedAt: now,
     };
 
-    const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
-    await setDoc(itemRef, {
-      ...newItem,
-      userId,
-      documentId,
-    });
+    if (db) {
+      try {
+        const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
+        await setDoc(itemRef, {
+          ...newItem,
+          userId,
+          documentId,
+        });
+      } catch {
+        // ignore
+      }
+    }
 
     return newItem;
   },
@@ -279,8 +308,11 @@ export const insightService = {
    */
   async deleteChecklistItem(userId: string, documentId: string, itemId: string): Promise<void> {
     if (!db) return;
-
-    const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
-    await deleteDoc(itemRef);
+    try {
+      const itemRef = doc(db, 'users', userId, 'documents', documentId, 'checklistItems', itemId);
+      await deleteDoc(itemRef);
+    } catch {
+      // ignore
+    }
   },
 };

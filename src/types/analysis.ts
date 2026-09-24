@@ -46,14 +46,18 @@ export interface LegalAnalysisResult {
   lawyerQuestions: string[];
 }
 
+export type LegalAnalysisOutput = LegalAnalysisResult;
+
 export interface AnalysisRecord {
   id: string;
   analysisId: string;
   documentId: string;
+  versionId?: string;
   userId: string;
   createdAt: string; // ISO 8601
   model: string;
   analysisVersion: string; // "1.0"
+  promptVersion?: string; // "v1.0"
   status: 'processing' | 'completed' | 'failed';
   result?: LegalAnalysisResult;
   errorMessage?: string;

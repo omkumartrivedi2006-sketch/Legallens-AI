@@ -6,7 +6,6 @@ import {
   FileCheck2,
   Download,
   Trash2,
-  ExternalLink,
   Calendar,
   Layers,
   FileSpreadsheet,
@@ -48,13 +47,13 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
   const getFileIcon = () => {
     switch (document.fileType) {
       case 'pdf':
-        return <FileText className="h-6 w-6 text-red-600 dark:text-red-400" />;
+        return <FileText className="h-5 w-5 text-neutral-800 dark:text-neutral-200" />;
       case 'docx':
-        return <FileCheck2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />;
+        return <FileCheck2 className="h-5 w-5 text-neutral-800 dark:text-neutral-200" />;
       case 'txt':
-        return <FileCode className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />;
+        return <FileCode className="h-5 w-5 text-neutral-800 dark:text-neutral-200" />;
       default:
-        return <FileSpreadsheet className="h-6 w-6 text-slate-500" />;
+        return <FileSpreadsheet className="h-5 w-5 text-neutral-500" />;
     }
   };
 
@@ -67,12 +66,12 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
   return (
     <div
       onClick={() => navigate(`/documents/${document.id}`)}
-      className="group relative flex flex-col justify-between p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 cursor-pointer"
+      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-xs hover:border-neutral-300 dark:hover:border-white/20 transition-all duration-150 cursor-pointer"
     >
       <div>
         {/* Header with Icon and Status */}
         <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:scale-105 transition-transform duration-200">
+          <div className="p-2 rounded-lg bg-neutral-100 dark:bg-[#151515] border border-neutral-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-150">
             {getFileIcon()}
           </div>
           <DocumentStatusBadge
@@ -84,14 +83,14 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
         {/* Title */}
         <h3
           title={document.originalFileName || document.fileName}
-          className="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1"
+          className="text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white truncate mb-1"
         >
           {document.originalFileName || document.fileName}
         </h3>
 
         {/* Metadata Badges */}
-        <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-slate-500 dark:text-slate-400 mb-4">
-          <span className="font-mono uppercase text-[11px] font-semibold tracking-wider text-slate-600 dark:text-slate-300">
+        <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-[11px] text-neutral-500 dark:text-[#858585] mb-4">
+          <span className="font-mono uppercase text-[10px] font-semibold tracking-wider text-neutral-700 dark:text-[#B8B8B8]">
             {document.fileType}
           </span>
           <span>•</span>
@@ -115,7 +114,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
       </div>
 
       {/* Footer */}
-      <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+      <div className="pt-3 border-t border-neutral-100 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-400 dark:text-[#858585]">
         <span className="flex items-center gap-1">
           <Calendar className="h-3 w-3" />
           {formattedDate}
@@ -127,25 +126,16 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onDeleteRe
             onClick={handleDownload}
             disabled={downloading}
             title="Download Document"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-md text-neutral-400 hover:text-blue-600 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors"
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" />
           </button>
-
           <button
             onClick={() => onDeleteRequest(document)}
             title="Delete Document"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-md text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors"
           >
-            <Trash2 className="h-4 w-4" />
-          </button>
-
-          <button
-            onClick={() => navigate(`/documents/${document.id}`)}
-            title="View Details"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <ExternalLink className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

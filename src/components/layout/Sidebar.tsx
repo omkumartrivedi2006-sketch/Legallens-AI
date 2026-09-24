@@ -13,7 +13,6 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { ThemeToggle } from '../ui/ThemeToggle';
 import { useAuth } from '../../hooks/useAuth';
 
 export interface SidebarProps {
@@ -59,7 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -68,92 +67,90 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Sidebar container */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-transform duration-200 ease-in-out lg:translate-x-0',
+          'fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col border-r border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0A0A0A] transition-transform duration-200 ease-in-out lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
         aria-label="Dashboard Sidebar"
       >
         {/* Brand header */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex h-14 items-center justify-between px-5 border-b border-neutral-200 dark:border-white/10">
           <Link
             to="/dashboard"
-            className="flex items-center gap-2.5 font-bold text-lg text-slate-900 dark:text-white"
+            className="flex items-center gap-2.5 font-bold text-base text-neutral-900 dark:text-white"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs">
               <Scale className="h-4 w-4" />
             </div>
             <span>
-              LegalLens <span className="text-blue-600 dark:text-blue-400">AI</span>
+              LegalLens <span className="text-blue-600 dark:text-blue-500">AI</span>
             </span>
           </Link>
 
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white lg:hidden"
+            className="p-1 rounded-md text-neutral-500 hover:text-neutral-900 dark:text-[#858585] dark:hover:text-white lg:hidden"
             aria-label="Close sidebar"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Navigation list */}
-        <div className="flex-1 overflow-y-auto px-3 py-6 space-y-1">
-          <div className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-[#666666]">
             Workspace
           </div>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
-                key={item.href}
+                key={item.label}
                 to={item.href}
                 onClick={() => {
                   if (window.innerWidth < 1024) onClose();
                 }}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-200'
+                      ? 'bg-neutral-100 text-neutral-950 font-semibold dark:bg-[#151515] dark:text-white dark:border dark:border-white/10'
+                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 dark:text-[#B8B8B8] dark:hover:text-white dark:hover:bg-white/[0.04]'
                   )
                 }
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-[#858585]" />
                 <span>{item.label}</span>
               </NavLink>
             );
           })}
         </div>
 
-        {/* Sidebar Footer with real User Profile & Logout */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-          <div className="flex items-center justify-between">
+        {/* User Card & Sign Out at bottom */}
+        <div className="p-3 border-t border-neutral-200 dark:border-white/10">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-50 dark:bg-[#101010] border border-neutral-200/80 dark:border-white/10">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-sm">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-semibold text-xs">
                 {initials}
               </div>
-              <div className="text-xs min-w-0">
-                <p className="font-semibold text-slate-800 dark:text-slate-200 truncate" title={displayName}>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-semibold text-neutral-900 dark:text-white">
                   {displayName}
                 </p>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate" title={displayEmail}>
+                <p className="truncate text-[10px] text-neutral-500 dark:text-[#858585]">
                   {displayEmail}
                 </p>
               </div>
             </div>
-            <ThemeToggle />
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="p-1 text-neutral-400 hover:text-rose-600 dark:text-[#858585] dark:hover:text-rose-400 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/40 transition-colors"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            <span>Sign Out</span>
-          </button>
         </div>
       </aside>
     </>

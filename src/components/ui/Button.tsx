@@ -25,25 +25,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 select-none';
+      'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 select-none';
 
     const variants = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow dark:bg-blue-600 dark:hover:bg-blue-500 text-white',
+        'bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-xs border border-blue-600/20',
       secondary:
-        'bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
+        'bg-neutral-100 text-neutral-900 border border-neutral-200 hover:bg-neutral-200/70 dark:bg-neutral-900 dark:text-neutral-100 dark:border-white/10 dark:hover:bg-neutral-800',
       outline:
-        'border border-slate-300 bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800/80 dark:hover:text-white',
+        'bg-transparent border border-neutral-300 text-neutral-800 hover:bg-neutral-50 hover:text-neutral-950 dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06] dark:hover:border-white/25',
       ghost:
-        'bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white',
+        'bg-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-white/[0.06]',
       danger:
-        'bg-rose-600 text-white hover:bg-rose-700 shadow-sm dark:bg-rose-600 dark:hover:bg-rose-500',
+        'bg-rose-600 text-white hover:bg-rose-700 shadow-xs dark:bg-rose-600/90 dark:hover:bg-rose-600',
     };
 
     const sizes = {
-      sm: 'text-xs px-3 py-1.5 gap-1.5',
-      md: 'text-sm px-4 py-2 gap-2',
-      lg: 'text-base px-5 py-2.5 gap-2.5',
+      sm: 'text-xs h-8 px-3 gap-1.5',
+      md: 'text-sm h-10 px-4 gap-2',
+      lg: 'text-sm h-11 px-5 gap-2.5',
     };
 
     return (

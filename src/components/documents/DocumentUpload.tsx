@@ -12,7 +12,6 @@ import {
 import { MAX_DOCUMENT_SIZE_MB, validateDocumentFile } from '../../types/document';
 import { UploadProgressState } from '../../hooks/useDocuments';
 
-
 interface DocumentUploadProps {
   onUpload: (file: File) => Promise<string>;
   activeUploads: Record<string, UploadProgressState>;
@@ -84,10 +83,10 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !isProcessingLocal && fileInputRef.current?.click()}
-        className={`relative group cursor-pointer border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
+        className={`relative group cursor-pointer border-2 border-dashed rounded-xl p-8 text-center transition-all duration-150 ${
           isDragging
-            ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/30 scale-[0.99]'
-            : 'border-slate-300 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-500 bg-white/60 dark:bg-slate-900/40 hover:bg-blue-50/30 dark:hover:bg-blue-950/10'
+            ? 'border-blue-500 bg-blue-50/50 dark:bg-white/[0.04]'
+            : 'border-neutral-300 dark:border-white/15 hover:border-blue-500 dark:hover:border-blue-400 bg-neutral-50 dark:bg-[#0A0A0A] hover:bg-neutral-100/50 dark:hover:bg-[#101010]'
         }`}
       >
         <input
@@ -101,36 +100,36 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
         <div className="flex flex-col items-center justify-center space-y-3">
           <div
-            className={`p-4 rounded-2xl transition-transform duration-200 group-hover:scale-110 ${
+            className={`p-3.5 rounded-xl transition-transform duration-150 group-hover:scale-105 ${
               isDragging
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                : 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-white/10'
             }`}
           >
-            <UploadCloud className="h-8 w-8" />
+            <UploadCloud className="h-6 w-6 text-blue-600 dark:text-blue-500" />
           </div>
 
           <div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-              <span className="text-blue-600 dark:text-blue-400 underline decoration-2 underline-offset-2">
+            <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+              <span className="text-blue-600 dark:text-blue-400 underline decoration-1 underline-offset-2">
                 Click to browse
               </span>{' '}
               or drag & drop your legal document
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-neutral-500 dark:text-[#858585] mt-1">
               Supports <strong>PDF</strong>, <strong>DOCX</strong>, and <strong>TXT</strong> up to{' '}
               {MAX_DOCUMENT_SIZE_MB}MB
             </p>
           </div>
 
           <div className="flex items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200/60 dark:border-red-800/60">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
               <FileText className="h-3 w-3" /> PDF
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
               <FileCheck2 className="h-3 w-3" /> DOCX
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-[#151515] text-neutral-700 dark:text-[#B8B8B8] border border-neutral-200 dark:border-white/10">
               <FileCode className="h-3 w-3" /> TXT
             </span>
           </div>
@@ -139,12 +138,12 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
       {/* Validation Error Alert */}
       {validationError && (
-        <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl border border-rose-200 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-xs animate-in fade-in">
+        <div className="flex items-start justify-between gap-3 p-3.5 rounded-lg border border-rose-200 bg-rose-50 dark:border-rose-900/60 dark:bg-rose-950/20 text-rose-800 dark:text-rose-200 text-xs animate-in fade-in">
           <div className="flex items-start gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
             <div>
               <p className="font-semibold">Upload Validation Notice</p>
-              <p className="mt-0.5 text-slate-600 dark:text-slate-300">{validationError}</p>
+              <p className="mt-0.5 text-neutral-600 dark:text-[#B8B8B8]">{validationError}</p>
             </div>
           </div>
           <button
@@ -162,7 +161,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           {activeUploadList.map((upload) => (
             <div
               key={upload.documentId}
-              className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
+              className="p-3.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-xs"
             >
               <div className="flex items-center justify-between text-xs mb-2">
                 <div className="flex items-center gap-2 max-w-[70%]">
@@ -173,32 +172,29 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
                   ) : (
                     <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400 shrink-0" />
                   )}
-                  <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                  <span className="font-medium text-neutral-800 dark:text-white truncate">
                     {upload.fileName}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-500 dark:text-slate-400 font-mono">
-                    {upload.stage === 'uploading' && `${upload.percent}%`}
-                    {upload.stage === 'extracting' && 'Extracting text...'}
-                    {upload.stage === 'completed' && 'Ready'}
-                    {upload.stage === 'failed' && 'Failed'}
+                  <span className="text-[11px] text-neutral-500 dark:text-[#858585]">
+                    {upload.error || (upload.stage === 'uploading' ? 'Uploading...' : upload.stage === 'extracting' ? 'Extracting text...' : upload.stage === 'finalizing' ? 'Finalizing...' : upload.stage === 'completed' ? 'Completed' : 'Failed')}
                   </span>
-
-                  {onClearUpload && (upload.stage === 'completed' || upload.stage === 'failed') && (
+                  {onClearUpload && (
                     <button
                       onClick={() => onClearUpload(upload.documentId)}
-                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      className="text-neutral-400 hover:text-neutral-600 dark:hover:text-white"
+                      title="Dismiss"
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X className="h-3 w-3" />
                     </button>
                   )}
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-neutral-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-300 ${
                     upload.stage === 'failed'
@@ -207,15 +203,9 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
                       ? 'bg-emerald-600'
                       : 'bg-blue-600'
                   }`}
-                  style={{ width: `${upload.stage === 'extracting' ? 100 : upload.percent}%` }}
+                  style={{ width: `${upload.percent}%` }}
                 />
               </div>
-
-              {upload.error && (
-                <p className="mt-1.5 text-[11px] text-rose-600 dark:text-rose-400 font-medium">
-                  {upload.error}
-                </p>
-              )}
             </div>
           ))}
         </div>

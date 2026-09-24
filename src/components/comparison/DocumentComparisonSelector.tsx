@@ -8,7 +8,6 @@ import {
   Sparkles,
   AlertCircle,
   Loader2,
-  Check,
   ChevronDown,
 } from 'lucide-react';
 import { DocumentMetadata } from '../../types/document';

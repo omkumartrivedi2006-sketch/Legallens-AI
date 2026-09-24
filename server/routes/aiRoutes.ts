@@ -1,5 +1,6 @@
-import { Router, Response } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddleware';
+import { aiRateLimiter } from '../middleware/rateLimiter';
 import { documentAnalysisService } from '../services/documentAnalysisService';
 import { documentChatService } from '../services/documentChatService';
 import { documentComparisonService } from '../services/documentComparisonService';
@@ -23,7 +24,8 @@ aiRouter.get('/health', (_req, res) => {
 aiRouter.post(
   '/documents/:documentId/analyze',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const { documentId } = req.params;
     const userId = req.userId;
 
@@ -32,7 +34,7 @@ aiRouter.post(
       return;
     }
 
-    const { fileName, fileType, extractedText, processingStatus, userId: bodyUserId } = req.body;
+    const { fileName, fileType, extractedText, processingStatus, userId: bodyUserId, versionId } = req.body;
 
     try {
       const record = await documentAnalysisService.analyzeDocument(userId, {
@@ -42,6 +44,7 @@ aiRouter.post(
         fileType,
         extractedText,
         processingStatus,
+        versionId,
       });
 
       res.status(200).json({
@@ -55,11 +58,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled analysis route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred while analyzing the document.',
-      });
+      next(error);
     }
   }
 );
@@ -68,7 +67,8 @@ aiRouter.post(
 aiRouter.post(
   '/documents/:documentId/chat',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const { documentId } = req.params;
     const userId = req.userId;
 
@@ -86,11 +86,13 @@ aiRouter.post(
       processingStatus,
       history,
       userId: bodyUserId,
+      versionId,
     } = req.body;
 
     try {
       const assistantMessage = await documentChatService.processChatMessage(userId, {
         documentId,
+        versionId,
         userId: bodyUserId || userId,
         conversationId,
         message,
@@ -113,11 +115,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled chat route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred during document chat.',
-      });
+      next(error);
     }
   }
 );
@@ -126,7 +124,8 @@ aiRouter.post(
 aiRouter.post(
   '/comparisons',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const userId = req.userId;
 
     if (!userId) {
@@ -160,11 +159,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled comparison route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred while comparing the documents.',
-      });
+      next(error);
     }
   }
 );
@@ -173,7 +168,8 @@ aiRouter.post(
 aiRouter.post(
   '/documents/:documentId/insights',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const { documentId } = req.params;
     const userId = req.userId;
 
@@ -189,6 +185,7 @@ aiRouter.post(
       processingStatus,
       userId: bodyUserId,
       existingAnalysis,
+      versionId,
     } = req.body;
 
     try {
@@ -200,6 +197,7 @@ aiRouter.post(
         extractedText,
         processingStatus,
         existingAnalysis,
+        versionId,
       });
 
       res.status(200).json({
@@ -213,11 +211,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled insights route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred while generating document insights.',
-      });
+      next(error);
     }
   }
 );
@@ -226,7 +220,8 @@ aiRouter.post(
 aiRouter.post(
   '/unified/query',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const userId = req.userId;
 
     if (!userId) {
@@ -257,11 +252,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled unified query route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred during multi-document intelligence query.',
-      });
+      next(error);
     }
   }
 );
@@ -270,7 +261,8 @@ aiRouter.post(
 aiRouter.post(
   '/unified/search',
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  aiRateLimiter,
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const userId = req.userId;
 
     if (!userId) {
@@ -299,11 +291,7 @@ aiRouter.post(
         });
         return;
       }
-
-      console.error('Unhandled unified search route error:', error);
-      res.status(500).json({
-        error: 'An unexpected error occurred while searching documents.',
-      });
+      next(error);
     }
   }
 );

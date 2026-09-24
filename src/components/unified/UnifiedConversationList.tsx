@@ -3,10 +3,7 @@ import {
   MessageSquare,
   Plus,
   Trash2,
-  Clock,
   Layers,
-  ChevronRight,
-  AlertCircle,
 } from 'lucide-react';
 import { UnifiedConversation } from '../../types/unified';
 import { cn } from '../../lib/utils';

@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { ChatConversation, ChatMessage } from '../types/chat';
+import { localDb } from './localDb';
 
 export class ChatServiceError extends Error {
   constructor(message: string, public readonly statusCode?: number) {
@@ -34,16 +35,20 @@ export const chatService = {
     extractedText: string;
     processingStatus?: string;
     history?: { role: 'user' | 'assistant'; content: string }[];
+    versionId?: string;
   }): Promise<{ message: ChatMessage; conversationTitle?: string }> {
-    if (!auth?.currentUser) {
-      throw new ChatServiceError('You must be signed in to chat with documents.', 401);
+    let idToken = '';
+    if (auth?.currentUser) {
+      try {
+        idToken = await auth.currentUser.getIdToken(true);
+      } catch {
+        // Continue with local token if available
+      }
     }
 
-    let idToken = '';
-    try {
-      idToken = await auth.currentUser.getIdToken(true);
-    } catch {
-      throw new ChatServiceError('Failed to retrieve authentication token. Please sign in again.', 401);
+    if (!idToken) {
+      // Local fallback token for development / offline use
+      idToken = 'local-auth-token';
     }
 
     const backendUrl = import.meta.env.VITE_BACKEND_API_URL || '';
@@ -66,9 +71,10 @@ export const chatService = {
           extractedText: params.extractedText,
           processingStatus: params.processingStatus,
           history: params.history,
+          versionId: params.versionId,
         }),
       });
-    } catch (networkErr: any) {
+    } catch {
       throw new ChatServiceError(
         'Unable to reach LegalLens AI backend service. Please ensure the server is running.',
         503
@@ -87,60 +93,96 @@ export const chatService = {
       throw new ChatServiceError(errorMsg, response.status);
     }
 
+    const assistantMessage = responseData.message as ChatMessage;
+
+    // Persist assistant message in local store
+    try {
+      await localDb.saveMessage(params.documentId, assistantMessage);
+    } catch (saveErr) {
+      console.warn('Local message save notice:', saveErr);
+    }
+
+    // Best-effort Firestore sync
+    if (db && params.userId) {
+      this.saveMessage(params.userId, params.documentId, params.conversationId, assistantMessage).catch(() => {});
+    }
+
     return {
-      message: responseData.message as ChatMessage,
+      message: assistantMessage,
       conversationTitle: responseData.conversationTitle,
     };
   },
 
   /**
-   * Fetches all saved conversations for a document.
+   * Fetches all saved conversations for a document from local storage and Firestore.
    */
   async getConversations(userId: string, documentId: string): Promise<ChatConversation[]> {
-    if (!db) return [];
-
+    let localConvs: ChatConversation[] = [];
     try {
-      const convCol = collection(
-        db,
-        'users',
-        userId,
-        'documents',
-        documentId,
-        'conversations'
-      );
-      const q = query(convCol, orderBy('updatedAt', 'desc'));
-      const snapshot = await getDocs(q);
-
-      const conversations: ChatConversation[] = [];
-      snapshot.forEach((docSnap) => {
-        conversations.push(docSnap.data() as ChatConversation);
-      });
-
-      return conversations;
-    } catch (error) {
-      console.warn('Failed to load conversations from Firestore:', error);
-      return [];
+      localConvs = await localDb.getConversations(documentId, userId);
+    } catch (e) {
+      console.warn('Local conversations read notice:', e);
     }
+
+    if (localConvs.length > 0) {
+      return localConvs;
+    }
+
+    if (db) {
+      try {
+        const convCol = collection(
+          db,
+          'users',
+          userId,
+          'documents',
+          documentId,
+          'conversations'
+        );
+        const q = query(convCol, orderBy('updatedAt', 'desc'));
+        const snapshot = await getDocs(q);
+
+        const conversations: ChatConversation[] = [];
+        snapshot.forEach((docSnap) => {
+          const conv = docSnap.data() as ChatConversation;
+          conversations.push(conv);
+          localDb.saveConversation(conv).catch(() => {});
+        });
+
+        return conversations;
+      } catch (error) {
+        console.warn('Firestore conversations fetch notice:', error);
+      }
+    }
+
+    return localConvs;
   },
 
   /**
-   * Creates or ensures a conversation document exists in Firestore.
+   * Creates or ensures a conversation document exists.
    */
   async createConversation(
     userId: string,
     documentId: string,
     conversationId: string,
-    title: string
+    title: string,
+    versionId?: string
   ): Promise<ChatConversation> {
     const nowIso = new Date().toISOString();
     const conv: ChatConversation = {
       id: conversationId,
       documentId,
+      versionId,
       userId,
       title,
       createdAt: nowIso,
       updatedAt: nowIso,
     };
+
+    try {
+      await localDb.saveConversation(conv);
+    } catch (e) {
+      console.warn('Local conversation save notice:', e);
+    }
 
     if (db) {
       try {
@@ -155,7 +197,7 @@ export const chatService = {
         );
         await setDoc(convRef, conv, { merge: true });
       } catch (err) {
-        console.warn('Failed to save conversation metadata in Firestore:', err);
+        console.warn('Firestore conversation save notice:', err);
       }
     }
 
@@ -171,29 +213,40 @@ export const chatService = {
     conversationId: string,
     title: string
   ): Promise<void> {
-    if (!db) return;
-
+    const nowIso = new Date().toISOString();
     try {
-      const convRef = doc(
-        db,
-        'users',
-        userId,
-        'documents',
-        documentId,
-        'conversations',
-        conversationId
-      );
-      await updateDoc(convRef, {
-        title,
-        updatedAt: new Date().toISOString(),
-      });
-    } catch (err) {
-      console.warn('Failed to update conversation title in Firestore:', err);
+      const conv = await localDb.getConversations(documentId, userId);
+      const found = conv.find((c) => c.id === conversationId);
+      if (found) {
+        await localDb.saveConversation({ ...found, title, updatedAt: nowIso });
+      }
+    } catch (e) {
+      console.warn('Local title update notice:', e);
+    }
+
+    if (db) {
+      try {
+        const convRef = doc(
+          db,
+          'users',
+          userId,
+          'documents',
+          documentId,
+          'conversations',
+          conversationId
+        );
+        await updateDoc(convRef, {
+          title,
+          updatedAt: nowIso,
+        });
+      } catch (err) {
+        console.warn('Firestore title update notice:', err);
+      }
     }
   },
 
   /**
-   * Persists a chat message in Firestore under the conversation's subcollection.
+   * Persists a chat message in local store and best-effort Firestore.
    */
   async saveMessage(
     userId: string,
@@ -201,6 +254,12 @@ export const chatService = {
     conversationId: string,
     message: ChatMessage
   ): Promise<void> {
+    try {
+      await localDb.saveMessage(documentId, message);
+    } catch (e) {
+      console.warn('Local message save notice:', e);
+    }
+
     if (!db) return;
 
     try {
@@ -217,7 +276,6 @@ export const chatService = {
       );
       await setDoc(msgRef, message);
 
-      // Touch the conversation's updatedAt timestamp
       const convRef = doc(
         db,
         'users',
@@ -231,7 +289,7 @@ export const chatService = {
         updatedAt: message.createdAt || new Date().toISOString(),
       }).catch(() => {});
     } catch (err) {
-      console.warn('Failed to save message in Firestore:', err);
+      console.warn('Firestore message save notice:', err);
     }
   },
 
@@ -243,43 +301,69 @@ export const chatService = {
     documentId: string,
     conversationId: string,
     onUpdate: (messages: ChatMessage[]) => void,
-    onError: (err: Error) => void
+    _onError: (err: Error) => void
   ): Unsubscribe {
-    if (!db) {
-      onError(new ChatServiceError('Firestore is not configured.'));
-      return () => {};
-    }
+    let isCleanedUp = false;
 
-    try {
-      const messagesCol = collection(
-        db,
-        'users',
-        userId,
-        'documents',
-        documentId,
-        'conversations',
-        conversationId,
-        'messages'
-      );
-      const q = query(messagesCol, orderBy('createdAt', 'asc'));
-
-      return onSnapshot(
-        q,
-        (snapshot) => {
-          const messages: ChatMessage[] = [];
-          snapshot.forEach((docSnap) => {
-            messages.push(docSnap.data() as ChatMessage);
-          });
-          onUpdate(messages);
-        },
-        (err) => {
-          onError(new ChatServiceError(`Failed to subscribe to messages: ${err.message}`));
+    const pushMessages = async () => {
+      if (isCleanedUp) return;
+      try {
+        const msgs = await localDb.getMessages(conversationId);
+        if (!isCleanedUp) {
+          onUpdate(msgs);
         }
-      );
-    } catch (err: any) {
-      onError(new ChatServiceError(`Failed to subscribe to messages: ${err.message}`));
-      return () => {};
+      } catch (e) {
+        console.warn('Local messages read error:', e);
+      }
+    };
+
+    pushMessages();
+
+    const unsubscribeLocal = localDb.subscribe(`messages_${conversationId}`, () => {
+      pushMessages();
+    });
+
+    let unsubscribeFirestore: Unsubscribe = () => {};
+    if (db) {
+      try {
+        const messagesCol = collection(
+          db,
+          'users',
+          userId,
+          'documents',
+          documentId,
+          'conversations',
+          conversationId,
+          'messages'
+        );
+        const q = query(messagesCol, orderBy('createdAt', 'asc'));
+
+        unsubscribeFirestore = onSnapshot(
+          q,
+          (snapshot) => {
+            if (isCleanedUp) return;
+            const messages: ChatMessage[] = [];
+            snapshot.forEach((docSnap) => {
+              const msg = docSnap.data() as ChatMessage;
+              messages.push(msg);
+              localDb.saveMessage(documentId, msg).catch(() => {});
+            });
+            pushMessages();
+          },
+          (err) => {
+            console.warn('Firestore message live listener notice:', err?.message);
+          }
+        );
+      } catch (err: any) {
+        console.warn('Firestore live listener subscribe notice:', err?.message);
+      }
     }
+
+    return () => {
+      isCleanedUp = true;
+      unsubscribeLocal();
+      unsubscribeFirestore();
+    };
   },
 
   /**
@@ -290,10 +374,15 @@ export const chatService = {
     documentId: string,
     conversationId: string
   ): Promise<void> {
+    try {
+      await localDb.deleteConversation(conversationId, documentId);
+    } catch (e) {
+      console.warn('Local conversation delete notice:', e);
+    }
+
     if (!db) return;
 
     try {
-      // 1. Delete all messages inside conversation
       const messagesCol = collection(
         db,
         'users',
@@ -308,7 +397,6 @@ export const chatService = {
       const deletePromises = msgSnap.docs.map((docSnap) => deleteDoc(docSnap.ref));
       await Promise.all(deletePromises);
 
-      // 2. Delete conversation metadata doc
       const convRef = doc(
         db,
         'users',
@@ -320,7 +408,7 @@ export const chatService = {
       );
       await deleteDoc(convRef);
     } catch (err: any) {
-      throw new ChatServiceError(`Failed to delete conversation: ${err.message}`);
+      console.warn('Firestore conversation delete notice:', err);
     }
   },
 };

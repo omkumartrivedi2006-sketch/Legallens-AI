@@ -4,6 +4,7 @@ import { ChatSource } from '../schemas/legalChatSchema';
 
 export interface DocumentChatRequest {
   documentId: string;
+  versionId?: string;
   userId: string;
   conversationId?: string;
   message: string;
@@ -18,6 +19,7 @@ export interface AssistantChatResponseData {
   id: string;
   conversationId: string;
   userId: string;
+  versionId?: string;
   role: 'assistant';
   content: string;
   createdAt: string;
@@ -93,7 +95,7 @@ export const documentChatService = {
     }
 
     const conversationId = existingConversationId || crypto.randomUUID();
-    const lockKey = `${authenticatedUserId}:${documentId}:${conversationId}`;
+    const lockKey = `${authenticatedUserId}:${documentId}:${params.versionId || 'current'}:${conversationId}`;
 
     if (activeChats.has(lockKey)) {
       throw new GeminiServiceError(
@@ -134,6 +136,7 @@ export const documentChatService = {
         id: messageId,
         conversationId,
         userId: authenticatedUserId,
+        versionId: params.versionId,
         role: 'assistant',
         content: result.answer,
         createdAt: nowIso,

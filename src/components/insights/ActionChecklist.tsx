@@ -8,7 +8,6 @@ import {
   Bookmark,
   CheckCircle2,
   Loader2,
-  Filter,
 } from 'lucide-react';
 import { ChecklistTaskItem, ChecklistTaskStatus, InsightSource } from '../../types/insight';
 import { Card, CardContent } from '../ui/Card';

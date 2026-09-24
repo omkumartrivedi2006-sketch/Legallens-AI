@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, Copy, Check, MessageSquareCode, ShieldCheck } from 'lucide-react';
+import { Copy, Check, MessageSquareCode } from 'lucide-react';
 import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 

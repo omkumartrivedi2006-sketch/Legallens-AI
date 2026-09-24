@@ -25,5 +25,22 @@ service firebase.storage {
       // Delete access: only authenticated user matching userId
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
+
+    // Versioned storage path: Users can store files within document versions
+    match /users/{userId}/documents/{documentId}/versions/{versionId}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      allow create, update: if request.auth != null 
+                            && request.auth.uid == userId
+                            && request.resource.size <= 25 * 1024 * 1024
+                            && (
+                              request.resource.contentType.matches('application/pdf') ||
+                              request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document') ||
+                              request.resource.contentType.matches('text/plain') ||
+                              request.resource.contentType.matches('application/json')
+                            );
+
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

@@ -62,6 +62,8 @@ export interface ComparisonDocumentMeta {
   fileType: string;
   wordCount?: number;
   pageCount?: number;
+  versionId?: string;
+  versionNumber?: number;
 }
 
 export interface ComparisonResult {

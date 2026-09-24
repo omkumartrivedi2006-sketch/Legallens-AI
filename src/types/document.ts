@@ -4,6 +4,31 @@ export type ProcessingStatus = 'uploading' | 'uploaded' | 'processing' | 'ready'
 
 export type ExtractionStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
+export interface DocumentVersion {
+  id: string; // versionId (e.g. 'v1', 'v2', etc.)
+  versionId: string;
+  documentId: string;
+  userId: string;
+  versionNumber: number;
+  fileName: string;
+  originalFileName: string;
+  fileType: SupportedDocumentType;
+  mimeType: string;
+  fileSize: number; // in bytes
+  storagePath: string; // users/{userId}/documents/{documentId}/versions/{versionId}/{fileName}
+  uploadedAt: string; // ISO 8601
+  createdAt: string; // ISO 8601
+  processingStatus: ProcessingStatus;
+  extractionStatus: ExtractionStatus;
+  extractedText?: string;
+  extractedTextStoragePath?: string;
+  pageCount?: number;
+  wordCount?: number;
+  contentHash?: string; // SHA-256
+  isCurrent: boolean;
+  errorMessage?: string;
+}
+
 export interface DocumentRecord {
   id: string;
   userId: string;
@@ -22,7 +47,12 @@ export interface DocumentRecord {
   pageCount?: number;
   wordCount?: number;
   errorMessage?: string;
+  currentVersionId?: string;
+  versionCount?: number;
+  contentHash?: string;
 }
+
+export type DocumentMetadata = DocumentRecord;
 
 export type DocumentSortOption = 'newest' | 'oldest' | 'name-asc' | 'name-desc';
 
@@ -113,3 +143,14 @@ export function sanitizeStorageFileName(originalName: string): string {
     .replace(/_{2,}/g, '_');
   return cleaned || 'document';
 }
+
+/**
+ * Computes the cryptographic SHA-256 hash of a file for data integrity & deduplication.
+ */
+export async function computeFileSha256(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+

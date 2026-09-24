@@ -69,13 +69,20 @@ export function useDocumentInsights(document: DocumentMetadata | null) {
     };
   }, [user, document?.id]);
 
-  // Check if existing insights are stale relative to the document
+  // Check if existing insights are stale relative to the document or version
   const isStale = useMemo(() => {
     if (!insightRecord || !document) return false;
+    if (
+      insightRecord.versionId &&
+      document.currentVersionId &&
+      insightRecord.versionId !== document.currentVersionId
+    ) {
+      return true;
+    }
     const docTime = new Date(document.uploadedAt).getTime();
     const insightTime = new Date(insightRecord.createdAt).getTime();
     return docTime > insightTime;
-  }, [insightRecord, document?.uploadedAt]);
+  }, [insightRecord, document?.uploadedAt, document?.currentVersionId]);
 
   // Generate or regenerate insights
   const generateInsights = useCallback(
@@ -107,6 +114,7 @@ export function useDocumentInsights(document: DocumentMetadata | null) {
           extractedText: document.extractedText,
           processingStatus: document.processingStatus,
           existingAnalysis: existingAnalysis || null,
+          versionId: document.currentVersionId,
         });
 
         setInsightRecord(record);

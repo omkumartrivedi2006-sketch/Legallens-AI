@@ -61,32 +61,32 @@ export const UserMenu: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600"
+        className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="User account menu"
       >
-        <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-1 ring-blue-500/20">
+        <div className="h-7 w-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-semibold shadow-xs">
           {initials}
         </div>
-        <span className="hidden md:inline-block text-xs font-medium text-slate-700 dark:text-slate-200 max-w-[120px] truncate">
+        <span className="hidden md:inline-block text-xs font-medium text-neutral-800 dark:text-neutral-200 max-w-[120px] truncate">
           {displayName}
         </span>
-        <ChevronDown className={cn('h-3.5 w-3.5 text-slate-400 transition-transform duration-200', isOpen && 'rotate-180')} />
+        <ChevronDown className={cn('h-3.5 w-3.5 text-neutral-400 transition-transform duration-200', isOpen && 'rotate-180')} />
       </button>
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute right-0 mt-2 w-60 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#101010] shadow-card py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
           role="menu"
           aria-orientation="vertical"
         >
           {/* User header */}
-          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+          <div className="px-4 py-2.5 border-b border-neutral-100 dark:border-white/10">
+            <p className="text-xs font-semibold text-neutral-900 dark:text-white truncate">
               {displayName}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+            <p className="text-[11px] text-neutral-500 dark:text-[#858585] truncate mt-0.5">
               {displayEmail}
             </p>
           </div>
@@ -95,23 +95,23 @@ export const UserMenu: React.FC = () => {
             <Link
               to="/settings"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-slate-950 dark:hover:text-white transition-colors"
+              className="flex items-center gap-2.5 px-4 py-2 text-xs text-neutral-700 dark:text-[#B8B8B8] hover:bg-neutral-50 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white transition-colors"
               role="menuitem"
             >
-              <Settings className="h-4 w-4 text-slate-400" />
+              <Settings className="h-3.5 w-3.5 text-neutral-400" />
               <span>Account Settings</span>
             </Link>
           </div>
 
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
+          <div className="border-t border-neutral-100 dark:border-white/10 pt-1">
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left disabled:opacity-50"
+              className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors text-left disabled:opacity-50"
               role="menuitem"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5" />
               <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
             </button>
           </div>

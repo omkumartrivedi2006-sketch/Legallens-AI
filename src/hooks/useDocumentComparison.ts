@@ -59,8 +59,13 @@ export function useDocumentComparison(initialDocA?: DocumentMetadata | null) {
       return;
     }
 
-    if (documentA.id === documentB.id) {
-      setError('Please select two different documents to compare.');
+    const isSameDoc = documentA.id === documentB.id;
+    const versionAId = (documentA as any).versionId || documentA.currentVersionId;
+    const versionBId = (documentB as any).versionId || documentB.currentVersionId;
+    const isSameVersion = versionAId && versionBId && versionAId === versionBId;
+
+    if (isSameDoc && (!versionAId || !versionBId || isSameVersion)) {
+      setError('Please select two different documents or two different versions to compare.');
       return;
     }
 

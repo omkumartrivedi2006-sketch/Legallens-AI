@@ -134,11 +134,15 @@ export interface InsightRecord {
   id: string;
   insightId: string;
   documentId: string;
+  versionId?: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
   model: string;
   analysisVersion: string;
+  promptVersion?: string;
   status: 'completed' | 'failed';
   result: LegalInsightsOutput;
 }
+
+export type LegalInsightsRecord = InsightRecord;

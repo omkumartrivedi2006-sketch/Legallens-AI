@@ -49,6 +49,7 @@ export function useDocumentAnalysis(documentId: string | undefined) {
       fileType: string;
       extractedText: string;
       processingStatus?: string;
+      versionId?: string;
     }): Promise<AnalysisRecord> => {
       if (!user) {
         throw new Error('You must be signed in to analyze documents.');
@@ -71,6 +72,7 @@ export function useDocumentAnalysis(documentId: string | undefined) {
           fileType: params.fileType,
           extractedText: params.extractedText,
           processingStatus: params.processingStatus,
+          versionId: params.versionId,
         });
 
         // Update local list optimistically if subscription has any latency

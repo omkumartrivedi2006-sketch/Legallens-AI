@@ -98,7 +98,7 @@ export const SourceSnippetModal: React.FC<SourceSnippetModalProps> = ({
               </Button>
             )}
             <Button
-              variant="default"
+              variant="primary"
               size="sm"
               onClick={onClose}
               className="text-xs h-8 px-4"

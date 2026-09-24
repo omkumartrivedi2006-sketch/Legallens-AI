@@ -2,20 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
-  Calendar,
   Columns,
   LayoutList,
   Trash2,
   AlertCircle,
   Loader2,
-  FileDiff,
-  Share2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { comparisonService } from '../services/comparisonService';
 import { ComparisonRecord, ComparisonChangeType, ComparisonSignificance } from '../types/comparison';
 import { Button } from '../components/ui/Button';
-import { PageHeader } from '../components/ui/PageHeader';
 import { ComparisonSummaryCard } from '../components/comparison/ComparisonSummaryCard';
 import { ComparisonFilters } from '../components/comparison/ComparisonFilters';
 import { SideBySideDiffView } from '../components/comparison/SideBySideDiffView';
@@ -91,11 +87,11 @@ export const ComparisonDetailsPage: React.FC = () => {
       if (selectedCategory !== 'all' && c.category !== selectedCategory) return false;
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
-        const inTitle = c.title.toLowerCase().includes(query);
-        const inExplanation = c.explanation.toLowerCase().includes(query);
-        const inOld = c.originalSnippet?.toLowerCase().includes(query);
-        const inNew = c.modifiedSnippet?.toLowerCase().includes(query);
-        const inCategory = c.category.toLowerCase().includes(query);
+        const inTitle = (c.section || '').toLowerCase().includes(query);
+        const inExplanation = (c.explanation || '').toLowerCase().includes(query);
+        const inOld = (c.documentAText || '').toLowerCase().includes(query);
+        const inNew = (c.documentBText || '').toLowerCase().includes(query);
+        const inCategory = (c.category || '').toLowerCase().includes(query);
         if (!inTitle && !inExplanation && !inOld && !inNew && !inCategory) return false;
       }
       return true;
@@ -274,7 +270,7 @@ export const ComparisonDetailsPage: React.FC = () => {
                 Cancel
               </Button>
               <Button
-                variant="default"
+                variant="danger"
                 size="sm"
                 onClick={handleDelete}
                 disabled={isDeleting}

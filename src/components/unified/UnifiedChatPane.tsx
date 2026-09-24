@@ -10,13 +10,11 @@ import {
   FileText,
   HelpCircle,
   RotateCcw,
-  Layers,
-  ExternalLink,
   ChevronDown,
   ChevronUp,
   Info,
 } from 'lucide-react';
-import { UnifiedMessage, UnifiedSource, UnifiedConflict } from '../../types/unified';
+import { UnifiedMessage, UnifiedSource } from '../../types/unified';
 import { cn } from '../../lib/utils';
 
 export interface UnifiedChatPaneProps {

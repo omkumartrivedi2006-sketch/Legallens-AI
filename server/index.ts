@@ -16,6 +16,17 @@ dotenv.config({ path: path.join(rootDir, '.env') });
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 
+import { productionErrorHandler } from './middleware/errorHandler';
+
+// Security Headers Middleware
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
 // Middleware
 app.use(
   cors({
@@ -29,25 +40,13 @@ app.use(express.json({ limit: '50mb' }));
 // Mount API routes
 app.use('/api', aiRouter);
 
-// Global Error Handler
-app.use(
-  (
-    err: any,
-    _req: express.Request,
-    res: express.Response,
-    _next: express.NextFunction
-  ) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-      error: 'Internal server error occurred in LegalLens AI backend.',
-    });
-  }
-);
+// Global Production Error Handler with Safe Reference IDs
+app.use(productionErrorHandler);
 
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`[LegalLens AI] Server running on http://127.0.0.1:${PORT}`);
-  console.log(`[LegalLens AI] GenAI model: ${process.env.GEMINI_MODEL || 'gemini-2.5-flash'}`);
+  console.log(`[LegalLens AI] GenAI model: ${process.env.GEMINI_MODEL || 'gemini-3.6-flash'}`);
   console.log(`[LegalLens AI] API key configured: ${Boolean(process.env.GEMINI_API_KEY)}`);
 });
 

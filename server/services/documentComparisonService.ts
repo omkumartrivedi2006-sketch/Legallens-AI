@@ -11,6 +11,8 @@ export interface DocumentInputPayload {
   processingStatus?: string;
   wordCount?: number;
   pageCount?: number;
+  versionId?: string;
+  versionNumber?: number;
 }
 
 export interface ComparisonRecordData {
@@ -29,6 +31,8 @@ export interface ComparisonRecordData {
       fileType: string;
       wordCount?: number;
       pageCount?: number;
+      versionId?: string;
+      versionNumber?: number;
     };
     documentB: {
       id: string;
@@ -36,6 +40,8 @@ export interface ComparisonRecordData {
       fileType: string;
       wordCount?: number;
       pageCount?: number;
+      versionId?: string;
+      versionNumber?: number;
     };
   };
 }
@@ -73,10 +79,16 @@ export const documentComparisonService = {
       );
     }
 
-    // 2. Same Document Protection
-    if (documentA.id === documentB.id) {
+    // 2. Same Document & Version Protection
+    const isSameDocument = documentA.id === documentB.id;
+    const isSameVersion =
+      documentA.versionId &&
+      documentB.versionId &&
+      documentA.versionId === documentB.versionId;
+
+    if (isSameDocument && (!documentA.versionId || !documentB.versionId || isSameVersion)) {
       throw new GeminiServiceError(
-        'Please select two different documents to compare.',
+        'Please select two different documents or two different versions to compare.',
         400
       );
     }
@@ -169,6 +181,8 @@ export const documentComparisonService = {
             fileType: documentA.fileType || 'txt',
             wordCount: documentA.wordCount,
             pageCount: documentA.pageCount,
+            versionId: documentA.versionId,
+            versionNumber: documentA.versionNumber,
           },
           documentB: {
             id: documentB.id,
@@ -176,6 +190,8 @@ export const documentComparisonService = {
             fileType: documentB.fileType || 'txt',
             wordCount: documentB.wordCount,
             pageCount: documentB.pageCount,
+            versionId: documentB.versionId,
+            versionNumber: documentB.versionNumber,
           },
         },
       };

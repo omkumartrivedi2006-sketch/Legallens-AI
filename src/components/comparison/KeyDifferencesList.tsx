@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-  FileText,
   AlertTriangle,
-  ArrowRight,
   Sparkles,
   BookOpen,
 } from 'lucide-react';

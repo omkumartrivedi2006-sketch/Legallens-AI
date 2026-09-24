@@ -4,18 +4,14 @@ import {
   GitCompare,
   History,
   RotateCcw,
-  Sparkles,
   AlertCircle,
   FileCode,
   LayoutList,
   Columns,
-  ArrowRight,
   UploadCloud,
-  FileText,
 } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
-import { EmptyState } from '../components/ui/EmptyState';
 import { useDocuments } from '../hooks/useDocuments';
 import { useDocumentComparison } from '../hooks/useDocumentComparison';
 import { DocumentComparisonSelector } from '../components/comparison/DocumentComparisonSelector';
@@ -45,7 +41,6 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
     setDocumentB,
     swapDocuments,
     activeComparison,
-    setActiveComparison,
     comparisonsList,
     isComparing,
     progressStage,
@@ -104,11 +99,11 @@ export const ComparePage: React.FC<ComparePageProps> = ({ defaultTab = 'compare'
       // Search term
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
-        const inTitle = c.title.toLowerCase().includes(query);
-        const inExplanation = c.explanation.toLowerCase().includes(query);
-        const inOld = c.originalSnippet?.toLowerCase().includes(query);
-        const inNew = c.modifiedSnippet?.toLowerCase().includes(query);
-        const inCategory = c.category.toLowerCase().includes(query);
+        const inTitle = (c.section || '').toLowerCase().includes(query);
+        const inExplanation = (c.explanation || '').toLowerCase().includes(query);
+        const inOld = (c.documentAText || '').toLowerCase().includes(query);
+        const inNew = (c.documentBText || '').toLowerCase().includes(query);
+        const inCategory = (c.category || '').toLowerCase().includes(query);
         if (!inTitle && !inExplanation && !inOld && !inNew && !inCategory) return false;
       }
       return true;

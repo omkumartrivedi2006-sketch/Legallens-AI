@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,6 +13,7 @@ import {
   Check,
   Search,
   AlertCircle,
+  AlertTriangle,
   Loader2,
   ShieldCheck,
   Database,
@@ -21,6 +22,7 @@ import {
   MessageSquare,
   GitCompare,
   ListTodo,
+  History,
 } from 'lucide-react';
 
 import { Card, CardContent } from '../components/ui/Card';
@@ -29,7 +31,10 @@ import { DocumentStatusBadge } from '../components/documents/DocumentStatus';
 import { DeleteConfirmModal } from '../components/documents/DeleteConfirmModal';
 import { useDocument } from '../hooks/useDocument';
 import { useDocumentAnalysis } from '../hooks/useDocumentAnalysis';
-import { formatFileSize } from '../types/document';
+import { useAuth } from '../hooks/useAuth';
+import { DocumentVersion, formatFileSize } from '../types/document';
+import { documentService } from '../services/documentService';
+import { VersionHistoryPanel } from '../components/documents/VersionHistoryPanel';
 
 import { LegalDisclaimerBanner } from '../components/analysis/LegalDisclaimerBanner';
 import { AnalysisOverview } from '../components/analysis/AnalysisOverview';
@@ -40,6 +45,7 @@ import { ConcernsAndQuestions } from '../components/analysis/ConcernsAndQuestion
 
 export const DocumentDetailsPage: React.FC = () => {
   const { documentId } = useParams<{ documentId: string }>();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { document, loading, error, downloading, getDownloadUrl, deleteThisDocument } =
     useDocument(documentId);
@@ -51,12 +57,31 @@ export const DocumentDetailsPage: React.FC = () => {
     triggerAnalysis,
   } = useDocumentAnalysis(documentId);
 
-  const [activeTab, setActiveTab] = useState<'analysis' | 'text'>('analysis');
+  const [activeTab, setActiveTab] = useState<'analysis' | 'text' | 'versions'>('analysis');
+  const [versions, setVersions] = useState<DocumentVersion[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [localAnalysisError, setLocalAnalysisError] = useState<string | null>(null);
+
+  // Subscribe to document versions
+  useEffect(() => {
+    if (!user || !documentId) return;
+    const unsubscribe = documentService.subscribeDocumentVersions(
+      user.uid,
+      documentId,
+      (vers) => setVersions(vers),
+      (err) => console.warn('Document versions subscribe error:', err)
+    );
+    return () => unsubscribe();
+  }, [user, documentId]);
+
+  // Detect if current analysis was generated from an older version
+  const isStaleAnalysis = useMemo(() => {
+    if (!latestAnalysis?.versionId || !document?.currentVersionId) return false;
+    return latestAnalysis.versionId !== document.currentVersionId;
+  }, [latestAnalysis?.versionId, document?.currentVersionId]);
 
   const handleDownload = async () => {
     try {
@@ -115,6 +140,7 @@ export const DocumentDetailsPage: React.FC = () => {
         fileType: document.fileType,
         extractedText: document.extractedText,
         processingStatus: document.processingStatus,
+        versionId: document.currentVersionId,
       });
       setActiveTab('analysis');
     } catch (err: any) {
@@ -234,10 +260,9 @@ export const DocumentDetailsPage: React.FC = () => {
             size="sm"
             onClick={() => navigate(`/chat/${document.id}`)}
             disabled={document.processingStatus !== 'ready' || !document.extractedText}
-            className="border-blue-200 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40"
           >
             <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
-            Chat with Document
+            Chat
           </Button>
 
           {/* Compare Document button */}
@@ -246,9 +271,8 @@ export const DocumentDetailsPage: React.FC = () => {
             size="sm"
             onClick={() => navigate(`/compare?docA=${document.id}`)}
             disabled={document.processingStatus !== 'ready' || !document.extractedText}
-            className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-850"
           >
-            <GitCompare className="h-3.5 w-3.5 mr-1.5 text-indigo-600 dark:text-indigo-400" />
+            <GitCompare className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
             Compare
           </Button>
 
@@ -258,10 +282,9 @@ export const DocumentDetailsPage: React.FC = () => {
             size="sm"
             onClick={() => navigate(`/insights/${document.id}`)}
             disabled={document.processingStatus !== 'ready' || !document.extractedText}
-            className="border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
           >
-            <ListTodo className="h-3.5 w-3.5 mr-1.5 text-emerald-600 dark:text-emerald-400" />
-            Legal Insights
+            <ListTodo className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
+            Insights
           </Button>
 
           <Button
@@ -383,7 +406,49 @@ export const DocumentDetailsPage: React.FC = () => {
           <Database className="h-3.5 w-3.5" />
           <span>Extracted Text</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('versions')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'versions'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <History className="h-3.5 w-3.5" />
+          <span>Version History</span>
+          {versions.length > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 font-bold text-slate-600 dark:text-slate-300">
+              {versions.length}
+            </span>
+          )}
+        </button>
       </div>
+
+      {/* Stale Analysis Warning */}
+      {isStaleAnalysis && activeTab === 'analysis' && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50/90 dark:border-amber-900/60 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 text-xs animate-in fade-in">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-amber-950 dark:text-amber-100">
+                Stale Analysis Warning
+              </p>
+              <p className="mt-0.5 text-amber-800 dark:text-amber-300">
+                This analysis was generated from an earlier revision ({latestAnalysis?.versionId}). The current active document is {document.currentVersionId}.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            onClick={handleStartAnalysis}
+            isLoading={isAnalyzing}
+            className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 text-xs"
+          >
+            Regenerate for Current Version
+          </Button>
+        </div>
+      )}
 
       {/* Analysis Error Notification */}
       {effectiveAnalysisError && (
@@ -582,6 +647,19 @@ export const DocumentDetailsPage: React.FC = () => {
               </CardContent>
             </Card>
           )}
+        </div>
+      )}
+
+      {/* TAB 3: VERSION HISTORY */}
+      {activeTab === 'versions' && (
+        <div className="animate-in fade-in duration-200">
+          <VersionHistoryPanel
+            document={document}
+            versions={versions}
+            onRefresh={() => {
+              // versions auto-update through onSnapshot
+            }}
+          />
         </div>
       )}
 

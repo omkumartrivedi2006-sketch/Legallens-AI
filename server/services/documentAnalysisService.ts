@@ -8,16 +8,19 @@ export interface DocumentAnalysisRequest {
   fileType: string;
   extractedText: string;
   processingStatus?: string;
+  versionId?: string;
 }
 
 export interface AnalysisRecordData {
   id: string;
   analysisId: string;
   documentId: string;
+  versionId?: string;
   userId: string;
   createdAt: string;
   model: string;
   analysisVersion: string;
+  promptVersion: string;
   status: 'completed' | 'failed';
   result: LegalAnalysisOutput;
 }
@@ -33,7 +36,7 @@ export const documentAnalysisService = {
     authenticatedUserId: string,
     params: DocumentAnalysisRequest
   ): Promise<AnalysisRecordData> {
-    const { documentId, userId, fileName, fileType, extractedText, processingStatus } = params;
+    const { documentId, userId, fileName, fileType, extractedText, processingStatus, versionId } = params;
 
     // 1. Strict Document Ownership Verification
     if (!userId || userId !== authenticatedUserId) {
@@ -59,10 +62,10 @@ export const documentAnalysisService = {
     }
 
     // 3. Duplicate In-Flight Protection
-    const lockKey = `${authenticatedUserId}:${documentId}`;
+    const lockKey = `${authenticatedUserId}:${documentId}:${versionId || 'current'}`;
     if (activeAnalyses.has(lockKey)) {
       throw new GeminiServiceError(
-        'An analysis is already actively in progress for this document. Please wait for it to complete.',
+        'An analysis is already actively in progress for this document version. Please wait for it to complete.',
         429
       );
     }
@@ -84,10 +87,12 @@ export const documentAnalysisService = {
         id: analysisId,
         analysisId,
         documentId,
+        versionId,
         userId: authenticatedUserId,
         createdAt: nowIso,
         model,
         analysisVersion: '1.0',
+        promptVersion: 'v1.0',
         status: 'completed',
         result,
       };

@@ -3,12 +3,8 @@ import {
   Search,
   FileText,
   ExternalLink,
-  Filter,
-  Sparkles,
   Tag,
   Clock,
-  Layers,
-  ChevronRight,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {

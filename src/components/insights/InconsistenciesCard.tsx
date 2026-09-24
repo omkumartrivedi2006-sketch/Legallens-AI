@@ -1,5 +1,5 @@
 import React from 'react';
-import { GitCompare, CheckCircle2, Split } from 'lucide-react';
+import { CheckCircle2, Split } from 'lucide-react';
 import { PotentialInconsistencyItem } from '../../types/insight';
 import { Card, CardContent } from '../ui/Card';
 

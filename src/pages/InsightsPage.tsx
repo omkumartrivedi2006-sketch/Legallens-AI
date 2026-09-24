@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ListTodo,
   FileText,
   ArrowRight,
-  Sparkles,
   Upload,
   Calendar,
   CheckSquare,
@@ -59,7 +57,7 @@ export const InsightsPage: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="h-8 w-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Calendar className="h-4 w-4" />
           </div>
           <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
@@ -71,7 +69,7 @@ export const InsightsPage: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
-          <div className="h-8 w-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <CheckSquare className="h-4 w-4" />
           </div>
           <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">

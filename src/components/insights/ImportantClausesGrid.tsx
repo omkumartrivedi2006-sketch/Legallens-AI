@@ -2,12 +2,10 @@ import React, { useState, useMemo } from 'react';
 import {
   FileText,
   Bookmark,
-  ShieldAlert,
   Users,
-  CheckCircle2,
   Filter,
 } from 'lucide-react';
-import { ImportantClauseItem, ClauseCategory, InsightSource } from '../../types/insight';
+import { ImportantClauseItem, InsightSource } from '../../types/insight';
 import { Card, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 

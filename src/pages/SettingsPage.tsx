@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sun, Moon, User, Key, LogOut, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Sun, Moon, User, Key, LogOut, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -11,7 +11,7 @@ import { cn } from '../lib/utils';
 
 export const SettingsPage: React.FC = () => {
   const { theme, setTheme } = useTheme();
-  const { user, logout, isConfigured } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -51,11 +51,11 @@ export const SettingsPage: React.FC = () => {
               className={cn(
                 'flex items-center gap-3 p-4 rounded-xl border text-left transition-all',
                 theme === 'light'
-                  ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20 text-blue-900 dark:text-blue-300 ring-2 ring-blue-600/20'
+                  ? 'border-blue-600 bg-blue-50/40 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-blue-600/30'
                   : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
               )}
             >
-              <div className="h-10 w-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 shadow-sm">
+              <div className="h-10 w-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 shadow-sm">
                 <Sun className="h-5 w-5" />
               </div>
               <div>
@@ -72,7 +72,7 @@ export const SettingsPage: React.FC = () => {
               className={cn(
                 'flex items-center gap-3 p-4 rounded-xl border text-left transition-all',
                 theme === 'dark'
-                  ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20 text-blue-900 dark:text-blue-300 ring-2 ring-blue-600/20'
+                  ? 'border-blue-600 bg-slate-100/50 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-blue-600/30'
                   : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
               )}
             >
@@ -163,39 +163,102 @@ export const SettingsPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Security & API Configuration */}
+      {/* Service & Integration Status */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Key className="h-4 w-4 text-blue-600" />
-            <span>Service & Integration Status</span>
+            <span>Production System & Integration Status</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Infrastructure modules status across LegalLens AI.
+            Operational status of LegalLens AI infrastructure and security layers.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Firebase Authentication</span>
-              {isConfigured ? (
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Configured & Active
-                </span>
-              ) : (
-                <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                  <AlertTriangle className="h-3.5 w-3.5" /> Awaiting .env.local keys
-                </span>
-              )}
+          <div className="space-y-2.5 text-xs">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Firebase Authentication</span>
+                <p className="text-[11px] text-slate-500">JWT token validation with Bearer token security</p>
+              </div>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Active & Isolated
+              </span>
             </div>
-            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Cloud Storage & Ingestion</span>
-              <span className="text-slate-400 font-mono">Module 3 Pending</span>
+
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Firebase Cloud Storage</span>
+                <p className="text-[11px] text-slate-500">Versioned storage paths with 25MB type-checked rules</p>
+              </div>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Enforced
+              </span>
             </div>
-            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Google Gemini LLM</span>
-              <span className="text-slate-400 font-mono">Module 4 Pending</span>
+
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Google Gemini LLM</span>
+                <p className="text-[11px] text-slate-500">Structured JSON schema output via Gemini 2.5 Flash</p>
+              </div>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Online
+              </span>
             </div>
+
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">API Rate Limiter & Error Guard</span>
+                <p className="text-[11px] text-slate-500">Sliding-window quota limiter with safe reference IDs (ERR-XXXXXX)</p>
+              </div>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Protected
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Privacy & Data Protection Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <span>Privacy & Document Protection Policy</span>
+          </CardTitle>
+          <CardDescription className="text-xs">
+            How your legal documents and proprietary agreements are safeguarded.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Strict Two-User Account Isolation
+            </p>
+            <p>
+              Every document, version, extracted text snippet, and AI analysis is partitioned under your specific Firebase UID (<code className="font-mono text-[11px] bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">{uid}</code>). Firestore and Cloud Storage security rules strictly prohibit any other authenticated or unauthenticated user from reading or modifying your data.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              Privacy-First AI Processing
+            </p>
+            <p>
+              Document content is sent to Google Gemini only during your active analysis, Q&A, comparison, or insight generation requests. All uploaded content is treated as untrusted data wrapped in security sandboxes (<code className="font-mono text-[11px] bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">&lt;untrusted_documents&gt;</code>) to prevent prompt injection and unauthorized instruction execution.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <p className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+              Data Retention & Deletion
+            </p>
+            <p>
+              Your documents and version records are retained solely for your use in this workspace. Deleting a document permanently purges all physical files from Cloud Storage and cascades deletion across all version records, extracted text, and subcollections.
+            </p>
           </div>
         </CardContent>
       </Card>

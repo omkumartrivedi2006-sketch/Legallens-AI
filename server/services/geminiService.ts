@@ -61,12 +61,137 @@ export class GeminiServiceError extends Error {
   }
 }
 
+/**
+ * Resilient candidate models ordered by stability and production readiness.
+ */
+const CANDIDATE_MODELS = [
+  'gemini-3.5-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.7-flash',
+];
+
+/**
+ * Parses raw JSON error payloads from Google into human-readable messages.
+ */
+function extractCleanErrorMessage(raw: unknown): string {
+  if (typeof raw !== 'string') {
+    raw = (raw as any)?.message || String(raw);
+  }
+  const str = String(raw).trim();
+  try {
+    const parsed = JSON.parse(str);
+    if (parsed.error?.message) {
+      return parsed.error.message;
+    }
+  } catch {
+    // string is not JSON
+  }
+  return str;
+}
+
+/**
+ * Executes a Gemini request with automatic retry and model fallback cascade.
+ */
+async function executeWithModelFallback(
+  ai: GoogleGenAI,
+  preferredModel: string,
+  requestParams: {
+    contents: any;
+    config: any;
+  },
+  operationLabel: string
+): Promise<{ rawText: string; usedModel: string }> {
+  // Construct fallback chain starting with the preferred model
+  const modelsToTry = [
+    preferredModel,
+    ...CANDIDATE_MODELS.filter((m) => m !== preferredModel),
+  ];
+
+  let lastError: any = null;
+
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const currentModel = modelsToTry[i];
+
+    // Try up to 2 attempts per model for transient glitches/high demand
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: currentModel,
+          contents: requestParams.contents,
+          config: requestParams.config,
+        });
+
+        const rawText = response.text || '';
+        if (rawText.trim()) {
+          return { rawText, usedModel: currentModel };
+        }
+      } catch (err: any) {
+        lastError = err;
+        const msg = err?.message || String(err);
+
+        // Immediate fail for invalid credentials
+        if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) {
+          throw new GeminiServiceError(
+            'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration in .env.local.',
+            401,
+            err
+          );
+        }
+
+        const isTemporary =
+          msg.includes('503') ||
+          msg.includes('UNAVAILABLE') ||
+          msg.includes('high demand') ||
+          msg.includes('RESOURCE_EXHAUSTED') ||
+          msg.includes('quota') ||
+          msg.includes('429') ||
+          msg.includes('fetch failed') ||
+          msg.includes('connection');
+
+        if (isTemporary && attempt === 1) {
+          // Brief pause before retry
+          await new Promise((res) => setTimeout(res, 800));
+          continue;
+        }
+
+        const nextModel = modelsToTry[i + 1];
+        if (nextModel) {
+          console.warn(
+            `[LegalLens AI] ${operationLabel} model '${currentModel}' reported: ${extractCleanErrorMessage(msg)}. Seamlessly switching to fallback model '${nextModel}'...`
+          );
+        }
+        break; // Advance to next model
+      }
+    }
+  }
+
+  // If all candidate models were exhausted
+  const cleaned = extractCleanErrorMessage(lastError?.message || 'Gemini API call failed.');
+  throw new GeminiServiceError(
+    `AI service temporarily unavailable across models: ${cleaned}`,
+    503,
+    lastError
+  );
+}
+
+/**
+ * Cleans potential markdown code fences from JSON output strings.
+ */
+function cleanJsonOutput(rawText: string): string {
+  return rawText
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+}
+
 export const geminiService = {
   /**
    * Retrieves the configured Gemini model name.
    */
   getModelName(): string {
-    return process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    return process.env.GEMINI_MODEL || 'gemini-3.5-flash';
   },
 
   /**
@@ -96,13 +221,12 @@ export const geminiService = {
 
     const model = this.getModelName();
     const ai = new GoogleGenAI({ apiKey });
-
     const userPrompt = buildUserAnalysisPrompt(fileName, fileType, extractedText);
 
-    let rawText = '';
-    try {
-      const response = await ai.models.generateContent({
-        model,
+    const { rawText, usedModel } = await executeWithModelFallback(
+      ai,
+      model,
+      {
         contents: userPrompt,
         config: {
           systemInstruction: LEGAL_ANALYSIS_SYSTEM_PROMPT,
@@ -110,45 +234,14 @@ export const geminiService = {
           responseSchema: LEGAL_ANALYSIS_JSON_SCHEMA,
           temperature: 0.1, // Low temperature for high factual grounding
         },
-      });
-
-      rawText = response.text || '';
-    } catch (apiError: any) {
-      const message = apiError?.message || 'Gemini API request failed.';
-      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
-        throw new GeminiServiceError(
-          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
-          401,
-          apiError
-        );
-      }
-      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
-        throw new GeminiServiceError(
-          'Gemini rate limit or quota exceeded. Please wait a moment and try again.',
-          429,
-          apiError
-        );
-      }
-      throw new GeminiServiceError(
-        `Gemini analysis failed: ${message}`,
-        502,
-        apiError
-      );
-    }
-
-    if (!rawText.trim()) {
-      throw new GeminiServiceError('Gemini returned an empty response.', 502);
-    }
+      },
+      'Document Analysis'
+    );
 
     // Parse JSON
     let parsedData: unknown;
     try {
-      // Clean potential code fences if returned despite responseMimeType
-      const cleaned = rawText
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/```\s*$/i, '')
-        .trim();
+      const cleaned = cleanJsonOutput(rawText);
       parsedData = JSON.parse(cleaned);
     } catch (parseErr) {
       throw new GeminiServiceError(
@@ -169,7 +262,7 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalAnalysisOutput,
-      model,
+      model: usedModel,
     };
   },
 
@@ -215,10 +308,10 @@ export const geminiService = {
       userQuestion: userQuestion.trim(),
     });
 
-    let rawText = '';
-    try {
-      const response = await ai.models.generateContent({
-        model,
+    const { rawText, usedModel } = await executeWithModelFallback(
+      ai,
+      model,
+      {
         contents,
         config: {
           systemInstruction: LEGAL_CHAT_SYSTEM_PROMPT,
@@ -226,40 +319,14 @@ export const geminiService = {
           responseSchema: LEGAL_CHAT_JSON_SCHEMA,
           temperature: 0.1, // Low temperature for high factual grounding
         },
-      });
-
-      rawText = response.text || '';
-    } catch (apiError: any) {
-      const message = apiError?.message || 'Gemini API request failed.';
-      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
-        throw new GeminiServiceError(
-          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
-          401,
-          apiError
-        );
-      }
-      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
-        throw new GeminiServiceError(
-          'Gemini rate limit or quota exceeded. Please wait a moment and try again.',
-          429,
-          apiError
-        );
-      }
-      throw new GeminiServiceError(`Gemini chat failed: ${message}`, 502, apiError);
-    }
-
-    if (!rawText.trim()) {
-      throw new GeminiServiceError('Gemini returned an empty response.', 502);
-    }
+      },
+      'Document Chat'
+    );
 
     // Parse JSON
     let parsedData: unknown;
     try {
-      const cleaned = rawText
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/```\s*$/i, '')
-        .trim();
+      const cleaned = cleanJsonOutput(rawText);
       parsedData = JSON.parse(cleaned);
     } catch (parseErr) {
       throw new GeminiServiceError(
@@ -280,7 +347,7 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalChatOutput,
-      model,
+      model: usedModel,
     };
   },
 
@@ -334,10 +401,10 @@ export const geminiService = {
       unchangedSectionHeadings,
     });
 
-    let rawText = '';
-    try {
-      const response = await ai.models.generateContent({
-        model,
+    const { rawText, usedModel } = await executeWithModelFallback(
+      ai,
+      model,
+      {
         contents,
         config: {
           systemInstruction: LEGAL_COMPARISON_SYSTEM_PROMPT,
@@ -345,44 +412,18 @@ export const geminiService = {
           responseSchema: LEGAL_COMPARISON_JSON_SCHEMA,
           temperature: 0.1, // Low temperature for high factual grounding
         },
-      });
-
-      rawText = response.text || '';
-    } catch (apiError: any) {
-      const message = apiError?.message || 'Gemini API comparison request failed.';
-      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
-        throw new GeminiServiceError(
-          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
-          401,
-          apiError
-        );
-      }
-      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
-        throw new GeminiServiceError(
-          'Gemini rate limit or quota exceeded. Please wait a moment and try again.',
-          429,
-          apiError
-        );
-      }
-      throw new GeminiServiceError(`Gemini comparison failed: ${message}`, 502, apiError);
-    }
-
-    if (!rawText.trim()) {
-      throw new GeminiServiceError('Gemini returned an empty response.', 502);
-    }
+      },
+      'Document Comparison'
+    );
 
     // Parse JSON
     let parsedData: unknown;
     try {
-      const cleaned = rawText
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/```\s*$/i, '')
-        .trim();
+      const cleaned = cleanJsonOutput(rawText);
       parsedData = JSON.parse(cleaned);
     } catch (parseErr) {
       throw new GeminiServiceError(
-        'Failed to parse structured JSON response from Gemini.',
+        'Failed to parse structured JSON comparison response from Gemini.',
         502,
         parseErr
       );
@@ -399,7 +440,7 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalComparisonOutput,
-      model,
+      model: usedModel,
     };
   },
 
@@ -431,10 +472,10 @@ export const geminiService = {
       existingAnalysis,
     });
 
-    let rawText = '';
-    try {
-      const response = await ai.models.generateContent({
-        model,
+    const { rawText, usedModel } = await executeWithModelFallback(
+      ai,
+      model,
+      {
         contents,
         config: {
           systemInstruction: LEGAL_INSIGHTS_SYSTEM_PROMPT,
@@ -442,40 +483,14 @@ export const geminiService = {
           responseSchema: LEGAL_INSIGHTS_JSON_SCHEMA,
           temperature: 0.1, // Low temperature for high precision & factual grounding
         },
-      });
-
-      rawText = response.text || '';
-    } catch (apiError: any) {
-      const message = apiError?.message || 'Gemini API insights generation failed.';
-      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
-        throw new GeminiServiceError(
-          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
-          401,
-          apiError
-        );
-      }
-      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
-        throw new GeminiServiceError(
-          'Gemini rate limit or quota exceeded. Please wait a moment and try again.',
-          429,
-          apiError
-        );
-      }
-      throw new GeminiServiceError(`Gemini insights generation failed: ${message}`, 502, apiError);
-    }
-
-    if (!rawText.trim()) {
-      throw new GeminiServiceError('Gemini returned an empty response for legal insights.', 502);
-    }
+      },
+      'Legal Insights'
+    );
 
     // Parse JSON
     let parsedData: unknown;
     try {
-      const cleaned = rawText
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/```\s*$/i, '')
-        .trim();
+      const cleaned = cleanJsonOutput(rawText);
       parsedData = JSON.parse(cleaned);
     } catch (parseErr) {
       throw new GeminiServiceError(
@@ -496,7 +511,7 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalInsightsOutput,
-      model,
+      model: usedModel,
     };
   },
 
@@ -535,10 +550,10 @@ export const geminiService = {
       userQuestion: userQuestion.trim(),
     });
 
-    let rawText = '';
-    try {
-      const response = await ai.models.generateContent({
-        model,
+    const { rawText, usedModel } = await executeWithModelFallback(
+      ai,
+      model,
+      {
         contents,
         config: {
           systemInstruction: LEGAL_UNIFIED_SYSTEM_PROMPT,
@@ -546,42 +561,14 @@ export const geminiService = {
           responseSchema: LEGAL_UNIFIED_JSON_SCHEMA,
           temperature: 0.1, // Low temperature for high factual grounding
         },
-      });
-
-      rawText = response.text || '';
-    } catch (apiError: any) {
-      const message = apiError?.message || 'Gemini API request failed.';
-      if (message.includes('API_KEY_INVALID') || message.includes('API key not valid')) {
-        throw new GeminiServiceError(
-          'Invalid Gemini API key provided. Please verify your GEMINI_API_KEY configuration.',
-          401,
-          apiError
-        );
-      }
-      if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota')) {
-        throw new GeminiServiceError(
-          'Gemini API rate limit or quota exceeded. Please try again shortly.',
-          429,
-          apiError
-        );
-      }
-      throw new GeminiServiceError(
-        `Gemini API error during unified intelligence query: ${message}`,
-        502,
-        apiError
-      );
-    }
-
-    if (!rawText.trim()) {
-      throw new GeminiServiceError(
-        'Empty response received from Gemini multi-document intelligence engine.',
-        502
-      );
-    }
+      },
+      'Unified Intelligence'
+    );
 
     let parsedData: unknown;
     try {
-      parsedData = JSON.parse(rawText);
+      const cleaned = cleanJsonOutput(rawText);
+      parsedData = JSON.parse(cleaned);
     } catch (parseErr) {
       console.error('Failed to parse Gemini unified response as JSON:', rawText);
       throw new GeminiServiceError(
@@ -602,7 +589,7 @@ export const geminiService = {
 
     return {
       result: parsedData as LegalUnifiedOutput,
-      model,
+      model: usedModel,
     };
   },
 };

@@ -11,7 +11,7 @@ import { DocumentRecord } from '../types/document';
 
 export function useUnifiedIntelligence() {
   const { user } = useAuth();
-  const { documents, isLoading: isLoadingDocuments } = useDocuments();
+  const { documents, loading: isLoadingDocuments } = useDocuments();
 
   // Selected documents state
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);

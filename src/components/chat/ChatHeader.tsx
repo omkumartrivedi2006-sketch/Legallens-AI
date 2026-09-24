@@ -63,6 +63,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               {document.originalFileName || document.fileName}
             </h2>
             <DocumentStatusBadge status={document.processingStatus} />
+            {document.currentVersionId && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+                {document.currentVersionId}
+              </span>
+            )}
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono uppercase">
             {document.fileType} {document.wordCount !== undefined ? `• ${document.wordCount.toLocaleString()} words` : ''}

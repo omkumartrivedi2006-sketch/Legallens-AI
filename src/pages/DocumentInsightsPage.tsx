@@ -1,26 +1,21 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Sparkles,
   FileCheck2,
   Calendar,
   CheckSquare,
-  FileText,
-  AlertTriangle,
-  Split,
   MessageSquareCode,
   Printer,
   Loader2,
   AlertCircle,
-  HelpCircle,
   RotateCcw,
 } from 'lucide-react';
 import { useDocument } from '../hooks/useDocument';
 import { useDocumentAnalysis } from '../hooks/useDocumentAnalysis';
 import { useDocumentInsights } from '../hooks/useDocumentInsights';
 import { InsightSource } from '../types/insight';
-import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { InsightsSummaryCard } from '../components/insights/InsightsSummaryCard';
@@ -48,7 +43,7 @@ export const DocumentInsightsPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { document, loading: isLoadingDoc, error: docError } = useDocument(documentId);
-  const { latestAnalysis } = useDocumentAnalysis(document);
+  const { latestAnalysis } = useDocumentAnalysis(document?.id || documentId);
   const {
     insightRecord,
     checklistItems,
@@ -210,19 +205,19 @@ export const DocumentInsightsPage: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2 text-left text-xs text-slate-600 dark:text-slate-300 pt-2">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                <FileCheck2 className="h-4 w-4 text-blue-600 shrink-0" />
+                <FileCheck2 className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Affirmative Duties</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-emerald-600 shrink-0" />
+                <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Milestone Deadlines</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                <CheckSquare className="h-4 w-4 text-indigo-600 shrink-0" />
+                <CheckSquare className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Action Checklist</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-850/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                <MessageSquareCode className="h-4 w-4 text-amber-600 shrink-0" />
+                <MessageSquareCode className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>Lawyer Prep Questions</span>
               </div>
             </div>

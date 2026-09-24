@@ -7,8 +7,6 @@ import {
   ArrowRight,
   AlertTriangle,
   Loader2,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
 import { ComparisonRecord } from '../../types/comparison';
 import { Button } from '../ui/Button';

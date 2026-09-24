@@ -157,6 +157,7 @@ export function useDocumentChat(document: DocumentMetadata | null) {
         id: userMessageId,
         conversationId,
         userId: user.uid,
+        versionId: document.currentVersionId,
         role: 'user',
         content: question,
         createdAt: nowIso,
@@ -178,7 +179,8 @@ export function useDocumentChat(document: DocumentMetadata | null) {
             user.uid,
             document.id,
             conversationId,
-            initialTitle
+            initialTitle,
+            document.currentVersionId
           );
           setConversations((prev) => [newConv, ...prev]);
         }
@@ -200,6 +202,7 @@ export function useDocumentChat(document: DocumentMetadata | null) {
           extractedText: document.extractedText,
           processingStatus: document.processingStatus,
           history,
+          versionId: document.currentVersionId,
         });
 
         // Save assistant message in Firestore

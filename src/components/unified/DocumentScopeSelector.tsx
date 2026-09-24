@@ -4,7 +4,6 @@ import {
   CheckSquare,
   Square,
   Search,
-  Filter,
   AlertCircle,
   Clock,
   Layers,
@@ -43,7 +42,6 @@ export const DocumentScopeSelector: React.FC<DocumentScopeSelectorProps> = ({
   );
 
   const allSelected = readyDocuments.length > 0 && selectedDocumentIds.length === readyDocuments.length;
-  const someSelected = selectedDocumentIds.length > 0 && selectedDocumentIds.length < readyDocuments.length;
 
   return (
     <div
@@ -165,7 +163,7 @@ export const DocumentScopeSelector: React.FC<DocumentScopeSelectorProps> = ({
                       <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500">
                         <span className="uppercase">{doc.fileType}</span>
                         <span>•</span>
-                        <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                        <span>{new Date(doc.uploadedAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>

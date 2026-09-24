@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  Filter,
   Layers,
   AlertCircle,
   ExternalLink,
@@ -42,9 +41,9 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
       await Promise.all(
         selectedDocuments.map(async (doc) => {
           try {
-            const insight = await insightService.getLatestDocumentInsights(user.uid, doc.id);
+            const insight = await insightService.getLatestInsights(user.uid, doc.id);
             results[doc.id] = insight;
-          } catch (e) {
+          } catch {
             results[doc.id] = null;
           }
         })
@@ -67,8 +66,8 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
   const aggregatedObligations: { doc: DocumentRecord; item: ObligationItem }[] = [];
   selectedDocuments.forEach((doc) => {
     const insight = insightsMap[doc.id];
-    if (insight && insight.obligations) {
-      insight.obligations.forEach((item) => {
+    if (insight && insight.result?.obligations) {
+      insight.result.obligations.forEach((item: ObligationItem) => {
         aggregatedObligations.push({ doc, item });
       });
     }
@@ -78,14 +77,12 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
   const aggregatedDeadlines: { doc: DocumentRecord; item: DeadlineItem }[] = [];
   selectedDocuments.forEach((doc) => {
     const insight = insightsMap[doc.id];
-    if (insight && insight.deadlines) {
-      insight.deadlines.forEach((item) => {
+    if (insight && insight.result?.deadlines) {
+      insight.result.deadlines.forEach((item: DeadlineItem) => {
         aggregatedDeadlines.push({ doc, item });
       });
     }
   });
-
-  const docsWithInsightsCount = Object.values(insightsMap).filter(Boolean).length;
 
   return (
     <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -182,9 +179,11 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                         <span className="font-semibold text-xs text-slate-900 dark:text-white truncate">
                           {doc.fileName}
                         </span>
-                        <span className="text-[10px] text-slate-400">
-                          {item.sourceCitation.section}
-                        </span>
+                        {item.source?.sectionHeading && (
+                          <span className="text-[10px] text-slate-400">
+                            {item.source.sectionHeading}
+                          </span>
+                        )}
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
                         {item.partyRole.replace(/_/g, ' ')}
@@ -195,10 +194,10 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                       {item.responsibleParty}: {item.action}
                     </p>
 
-                    {item.conditions && (
+                    {item.condition && (
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
                         <strong className="text-slate-600 dark:text-slate-300">Condition:</strong>{' '}
-                        {item.conditions}
+                        {item.condition}
                       </p>
                     )}
 
@@ -209,9 +208,11 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                       </p>
                     )}
 
-                    <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 italic">
-                      "{item.sourceCitation.snippet}"
-                    </div>
+                    {item.source?.textSnippet && (
+                      <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 italic">
+                        "{item.source.textSnippet}"
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -244,7 +245,7 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                         </span>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 capitalize">
-                        {item.category}
+                        {item.dateType}
                       </span>
                     </div>
 
@@ -253,7 +254,7 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                         {item.title}
                       </p>
                       <span className="text-[11px] font-bold text-slate-900 dark:text-white">
-                        {item.isExplicitDate ? item.dateValue : 'Trigger-dependent'}
+                        {item.dateValue || 'Trigger-dependent'}
                       </span>
                     </div>
 
@@ -261,15 +262,17 @@ export const CrossDocumentMatrixPane: React.FC<CrossDocumentMatrixPaneProps> = (
                       {item.description}
                     </p>
 
-                    {item.triggerDescription && (
+                    {item.trigger && (
                       <p className="text-[11px] text-amber-700 dark:text-amber-300">
-                        <strong>Trigger:</strong> {item.triggerDescription}
+                        <strong>Trigger:</strong> {item.trigger}
                       </p>
                     )}
 
-                    <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 italic">
-                      "{item.sourceCitation.snippet}"
-                    </div>
+                    {item.source?.textSnippet && (
+                      <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 italic">
+                        "{item.source.textSnippet}"
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

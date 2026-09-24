@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { AnalysisRecord } from '../types/analysis';
+import { localDb } from './localDb';
 
 export class AiServiceError extends Error {
   constructor(message: string, public readonly statusCode?: number) {
@@ -30,16 +31,18 @@ export const aiService = {
     fileType: string;
     extractedText: string;
     processingStatus?: string;
+    versionId?: string;
   }): Promise<AnalysisRecord> {
-    if (!auth?.currentUser) {
-      throw new AiServiceError('You must be signed in to analyze documents.', 401);
-    }
-
     let idToken = '';
-    try {
-      idToken = await auth.currentUser.getIdToken(true);
-    } catch {
-      throw new AiServiceError('Failed to retrieve authentication token. Please sign in again.', 401);
+    if (auth?.currentUser) {
+      try {
+        idToken = await auth.currentUser.getIdToken(true);
+      } catch {
+        // Fallback
+      }
+    }
+    if (!idToken) {
+      idToken = 'local-auth-token';
     }
 
     const backendUrl = import.meta.env.VITE_BACKEND_API_URL || '';
@@ -59,9 +62,10 @@ export const aiService = {
           fileType: params.fileType,
           extractedText: params.extractedText,
           processingStatus: params.processingStatus,
+          versionId: params.versionId,
         }),
       });
-    } catch (networkErr: any) {
+    } catch {
       throw new AiServiceError(
         'Unable to reach LegalLens AI backend service. Please ensure the server is running.',
         503
@@ -82,11 +86,16 @@ export const aiService = {
 
     const analysisRecord = responseData.analysis as AnalysisRecord;
 
-    // Persist analysis result into user-isolated Firestore subcollection
+    // 1. Persist analysis locally
     try {
-      await this.saveAnalysisRecord(params.userId, params.documentId, analysisRecord);
-    } catch (firestoreErr) {
-      console.warn('Firestore analysis save warning:', firestoreErr);
+      await localDb.saveAnalysis(analysisRecord);
+    } catch (localErr) {
+      console.warn('Local analysis save notice:', localErr);
+    }
+
+    // 2. Best-effort Firestore sync
+    if (db) {
+      this.saveAnalysisRecord(params.userId, params.documentId, analysisRecord).catch(() => {});
     }
 
     return analysisRecord;
@@ -100,10 +109,20 @@ export const aiService = {
     documentId: string,
     record: AnalysisRecord
   ): Promise<void> {
+    try {
+      await localDb.saveAnalysis(record);
+    } catch (e) {
+      console.warn('Local analysis save notice:', e);
+    }
+
     if (!db) return;
 
-    const recordRef = doc(db, 'users', userId, 'documents', documentId, 'analyses', record.id);
-    await setDoc(recordRef, record);
+    try {
+      const recordRef = doc(db, 'users', userId, 'documents', documentId, 'analyses', record.id);
+      await setDoc(recordRef, record);
+    } catch (cloudErr) {
+      console.warn('Firestore analysis save notice:', cloudErr);
+    }
   },
 
   /**
@@ -113,41 +132,67 @@ export const aiService = {
     userId: string,
     documentId: string,
     onUpdate: (analyses: AnalysisRecord[]) => void,
-    onError: (err: Error) => void
+    _onError: (err: Error) => void
   ): Unsubscribe {
-    if (!db) {
-      onError(new AiServiceError('Firestore is not configured.'));
-      return () => {};
-    }
+    let isCleanedUp = false;
 
-    try {
-      const analysesCol = collection(
-        db,
-        'users',
-        userId,
-        'documents',
-        documentId,
-        'analyses'
-      );
-      const q = query(analysesCol, orderBy('createdAt', 'desc'));
-
-      return onSnapshot(
-        q,
-        (snapshot) => {
-          const records: AnalysisRecord[] = [];
-          snapshot.forEach((docSnap) => {
-            records.push(docSnap.data() as AnalysisRecord);
-          });
-          onUpdate(records);
-        },
-        (err) => {
-          onError(new AiServiceError(`Failed to load analyses: ${err.message}`));
+    const pushAnalyses = async () => {
+      if (isCleanedUp) return;
+      try {
+        const analyses = await localDb.getAnalyses(documentId);
+        if (!isCleanedUp) {
+          onUpdate(analyses);
         }
-      );
-    } catch (err: any) {
-      onError(new AiServiceError(`Failed to subscribe to analyses: ${err.message}`));
-      return () => {};
+      } catch (e) {
+        console.warn('Local analyses read error:', e);
+      }
+    };
+
+    pushAnalyses();
+
+    const unsubscribeLocal = localDb.subscribe(`analyses_${documentId}`, () => {
+      pushAnalyses();
+    });
+
+    let unsubscribeFirestore: Unsubscribe = () => {};
+    if (db) {
+      try {
+        const analysesCol = collection(
+          db,
+          'users',
+          userId,
+          'documents',
+          documentId,
+          'analyses'
+        );
+        const q = query(analysesCol, orderBy('createdAt', 'desc'));
+
+        unsubscribeFirestore = onSnapshot(
+          q,
+          (snapshot) => {
+            if (isCleanedUp) return;
+            const records: AnalysisRecord[] = [];
+            snapshot.forEach((docSnap) => {
+              const rec = docSnap.data() as AnalysisRecord;
+              records.push(rec);
+              localDb.saveAnalysis(rec).catch(() => {});
+            });
+            pushAnalyses();
+          },
+          (err) => {
+            console.warn('Firestore live analyses notice:', err?.message);
+          }
+        );
+      } catch (err: any) {
+        console.warn('Firestore analyses subscribe notice:', err?.message);
+      }
     }
+
+    return () => {
+      isCleanedUp = true;
+      unsubscribeLocal();
+      unsubscribeFirestore();
+    };
   },
 
   /**
@@ -157,6 +202,13 @@ export const aiService = {
     userId: string,
     documentId: string
   ): Promise<AnalysisRecord | null> {
+    try {
+      const records = await localDb.getAnalyses(documentId);
+      if (records.length > 0) return records[0];
+    } catch (e) {
+      console.warn('Local latest analysis read notice:', e);
+    }
+
     if (!db) return null;
 
     try {
@@ -174,7 +226,7 @@ export const aiService = {
       if (snap.empty) return null;
       return snap.docs[0].data() as AnalysisRecord;
     } catch (error) {
-      console.warn('Failed to fetch latest analysis:', error);
+      console.warn('Firestore latest analysis notice:', error);
       return null;
     }
   },

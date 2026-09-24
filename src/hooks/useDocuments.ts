@@ -80,7 +80,6 @@ export function useDocuments() {
       const documentId = crypto.randomUUID();
       const detectedType = validation.fileType;
       const sanitizedName = sanitizeStorageFileName(file.name);
-      const expectedStoragePath = `users/${user.uid}/documents/${documentId}/${sanitizedName}`;
       const nowIso = new Date().toISOString();
 
       // Track active upload progress in UI
@@ -89,77 +88,28 @@ export function useDocuments() {
         [documentId]: {
           documentId,
           fileName: file.name,
-          percent: 0,
+          percent: 25,
           stage: 'uploading',
         },
       }));
 
-      // 2. Create initial Firestore record
-      const initialRecord: DocumentRecord = {
-        id: documentId,
-        userId: user.uid,
-        fileName: file.name,
-        originalFileName: file.name,
-        fileType: detectedType,
-        mimeType: file.type || 'application/octet-stream',
-        fileSize: file.size,
-        storagePath: expectedStoragePath,
-        uploadedAt: nowIso,
-        updatedAt: nowIso,
-        processingStatus: 'uploading',
-        extractionStatus: 'pending',
-      };
-
       try {
-        await documentService.createDocumentRecord(user.uid, initialRecord);
-
-        // 3. Upload to Cloud Storage with real byte progress
-        const { storagePath } = await storageService.uploadDocumentFile(
-          user.uid,
-          documentId,
-          file,
-          (percent) => {
-            setActiveUploads((prev) => ({
-              ...prev,
-              [documentId]: {
-                documentId,
-                fileName: file.name,
-                percent,
-                stage: percent >= 100 ? 'extracting' : 'uploading',
-              },
-            }));
-          }
-        );
-
-        // 4. Update status to processing
-        await documentService.updateDocumentRecord(user.uid, documentId, {
-          storagePath,
-          processingStatus: 'processing',
-          extractionStatus: 'processing',
-        });
-
+        // 2. Extract Document Text Client-Side
         setActiveUploads((prev) => ({
           ...prev,
           [documentId]: {
             documentId,
             fileName: file.name,
-            percent: 100,
+            percent: 50,
             stage: 'extracting',
           },
         }));
 
-        // 5. Real Text Extraction
         let extraction;
         try {
           extraction = await extractDocumentText(file, detectedType);
         } catch (extractErr: any) {
           const failMsg = extractErr?.message || 'Text extraction failed.';
-          await documentService.updateDocumentRecord(user.uid, documentId, {
-            processingStatus: 'failed',
-            extractionStatus: 'failed',
-            errorMessage: failMsg,
-          });
-
           setActiveUploads((prev) => ({
             ...prev,
             [documentId]: {
@@ -170,34 +120,55 @@ export function useDocuments() {
               error: failMsg,
             },
           }));
-
           throw extractErr;
         }
 
-        // 6. Handle large extracted text backup if necessary
-        let extractedTextStoragePath: string | undefined;
-        if (extraction.text.length > 300000) {
-          try {
-            extractedTextStoragePath = await storageService.uploadExtractedTextBackup(
-              user.uid,
-              documentId,
-              extraction
-            );
-          } catch (storageErr) {
-            console.warn('Extracted text storage backup notice:', storageErr);
+        // 3. Store file in local storage vault & optional background cloud
+        setActiveUploads((prev) => ({
+          ...prev,
+          [documentId]: {
+            documentId,
+            fileName: file.name,
+            percent: 80,
+            stage: 'finalizing',
+          },
+        }));
+
+        let storagePath = `local://${documentId}/${sanitizedName}`;
+        try {
+          const uploadRes = await storageService.uploadDocumentFile(
+            user.uid,
+            documentId,
+            file
+          );
+          if (uploadRes?.storagePath) {
+            storagePath = uploadRes.storagePath;
           }
+        } catch (storageErr) {
+          console.warn('Storage upload fallback notice:', storageErr);
         }
 
-        // 7. Update Firestore record to 'ready' and 'completed'
-        await documentService.updateDocumentRecord(user.uid, documentId, {
+        // 4. Create and save ready DocumentRecord
+        const readyRecord: DocumentRecord = {
+          id: documentId,
+          userId: user.uid,
+          fileName: file.name,
+          originalFileName: file.name,
+          fileType: detectedType,
+          mimeType: file.type || 'application/octet-stream',
+          fileSize: file.size,
+          storagePath,
+          uploadedAt: nowIso,
+          updatedAt: nowIso,
           processingStatus: 'ready',
           extractionStatus: 'completed',
           extractedText: extraction.text,
           pageCount: extraction.pageCount || 1,
           wordCount: extraction.wordCount,
-          extractedTextStoragePath,
-          errorMessage: undefined,
-        });
+          versionCount: 1,
+        };
+
+        await documentService.createDocumentRecord(user.uid, readyRecord);
 
         setActiveUploads((prev) => ({
           ...prev,

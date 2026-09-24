@@ -10,17 +10,20 @@ export interface DocumentInsightsRequest {
   extractedText: string;
   processingStatus?: string;
   existingAnalysis?: LegalAnalysisOutput | null;
+  versionId?: string;
 }
 
 export interface InsightRecordData {
   id: string;
   insightId: string;
   documentId: string;
+  versionId?: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
   model: string;
   analysisVersion: string;
+  promptVersion: string;
   status: 'completed' | 'failed';
   result: LegalInsightsOutput;
 }
@@ -85,6 +88,7 @@ export const documentInsightService = {
       extractedText,
       processingStatus,
       existingAnalysis,
+      versionId,
     } = params;
 
     // 1. Strict Document Ownership Verification
@@ -111,14 +115,15 @@ export const documentInsightService = {
     }
 
     // 3. Mutex Concurrency Lock
-    if (activeInsights.has(documentId)) {
+    const lockKey = `${authenticatedUserId}:${documentId}:${versionId || 'current'}`;
+    if (activeInsights.has(lockKey)) {
       throw new GeminiServiceError(
-        'An insights generation task is already in progress for this document. Please wait a moment.',
+        'An insights generation task is already in progress for this document version. Please wait a moment.',
         409
       );
     }
 
-    activeInsights.add(documentId);
+    activeInsights.add(lockKey);
 
     try {
       // 4. Generate structured insights with Gemini
@@ -153,18 +158,20 @@ export const documentInsightService = {
         id: insightId,
         insightId,
         documentId,
+        versionId,
         userId: authenticatedUserId,
         createdAt: timestamp,
         updatedAt: timestamp,
         model,
         analysisVersion: '1.0',
+        promptVersion: 'v1.0',
         status: 'completed',
         result: finalResult,
       };
 
       return record;
     } finally {
-      activeInsights.delete(documentId);
+      activeInsights.delete(lockKey);
     }
   },
 };

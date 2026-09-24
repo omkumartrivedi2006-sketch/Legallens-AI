@@ -15,6 +15,7 @@ export interface ChatMessage {
   id: string;
   conversationId: string;
   userId: string;
+  versionId?: string;
   role: ChatMessageRole;
   content: string;
   createdAt: string; // ISO string
@@ -25,6 +26,7 @@ export interface ChatMessage {
 export interface ChatConversation {
   id: string;
   documentId: string;
+  versionId?: string;
   userId: string;
   title: string;
   createdAt: string; // ISO string
@@ -45,6 +47,7 @@ export interface DocumentChunk {
 
 export interface SendChatMessagePayload {
   documentId: string;
+  versionId?: string;
   conversationId: string;
   message: string;
   fileName: string;

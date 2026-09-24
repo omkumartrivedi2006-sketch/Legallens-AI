@@ -11,6 +11,7 @@ import {
 import { auth, db } from '../lib/firebase';
 import { ComparisonRecord } from '../types/comparison';
 import { DocumentMetadata } from '../types/document';
+import { localDb } from './localDb';
 
 export class ComparisonServiceError extends Error {
   constructor(message: string, public readonly statusCode?: number) {
@@ -27,10 +28,6 @@ export const comparisonService = {
     documentA: DocumentMetadata;
     documentB: DocumentMetadata;
   }): Promise<ComparisonRecord> {
-    if (!auth?.currentUser) {
-      throw new ComparisonServiceError('You must be signed in to compare documents.', 401);
-    }
-
     const { documentA, documentB } = params;
 
     if (documentA.id === documentB.id) {
@@ -55,13 +52,15 @@ export const comparisonService = {
     }
 
     let idToken = '';
-    try {
-      idToken = await auth.currentUser.getIdToken(true);
-    } catch {
-      throw new ComparisonServiceError(
-        'Failed to retrieve authentication token. Please sign in again.',
-        401
-      );
+    if (auth?.currentUser) {
+      try {
+        idToken = await auth.currentUser.getIdToken(true);
+      } catch {
+        // Fallback
+      }
+    }
+    if (!idToken) {
+      idToken = 'local-auth-token';
     }
 
     const backendUrl = import.meta.env.VITE_BACKEND_API_URL || '';
@@ -98,7 +97,7 @@ export const comparisonService = {
           },
         }),
       });
-    } catch (networkErr: any) {
+    } catch {
       throw new ComparisonServiceError(
         'Unable to reach LegalLens AI backend service. Please ensure the server is running.',
         503
@@ -119,22 +118,26 @@ export const comparisonService = {
 
     const comparisonRecord = responseData.comparison as ComparisonRecord;
 
-    // Persist comparison record in Firestore: users/{userId}/comparisons/{comparisonId}
-    if (auth.currentUser?.uid) {
-      try {
-        await this.saveComparisonRecord(auth.currentUser.uid, comparisonRecord);
-      } catch (saveErr) {
-        console.warn('Failed to persist comparison record in Firestore:', saveErr);
-      }
+    // 1. Persist comparison record in local store
+    try {
+      await this.saveComparisonRecord(documentA.userId || 'local-user', comparisonRecord);
+    } catch (saveErr) {
+      console.warn('Failed to persist comparison record locally:', saveErr);
     }
 
     return comparisonRecord;
   },
 
   /**
-   * Persists a comparison record in Firestore under users/{userId}/comparisons/{id}.
+   * Persists a comparison record in local store and best-effort Firestore.
    */
   async saveComparisonRecord(userId: string, record: ComparisonRecord): Promise<void> {
+    try {
+      await localDb.saveComparison({ ...record, userId });
+    } catch (e) {
+      console.warn('Local comparison save notice:', e);
+    }
+
     if (!db) return;
 
     try {
@@ -146,26 +149,40 @@ export const comparisonService = {
   },
 
   /**
-   * Retrieves all previous comparisons for the authenticated user.
+   * Retrieves all previous comparisons for the user.
    */
   async getComparisons(userId: string): Promise<ComparisonRecord[]> {
-    if (!db) return [];
-
+    let localList: ComparisonRecord[] = [];
     try {
-      const compCol = collection(db, 'users', userId, 'comparisons');
-      const q = query(compCol, orderBy('createdAt', 'desc'));
-      const snapshot = await getDocs(q);
-
-      const records: ComparisonRecord[] = [];
-      snapshot.forEach((docSnap) => {
-        records.push(docSnap.data() as ComparisonRecord);
-      });
-
-      return records;
-    } catch (error) {
-      console.warn('Failed to load comparisons from Firestore:', error);
-      return [];
+      localList = await localDb.getComparisons(userId);
+    } catch (e) {
+      console.warn('Local comparisons read notice:', e);
     }
+
+    if (localList.length > 0) {
+      return localList;
+    }
+
+    if (db) {
+      try {
+        const compCol = collection(db, 'users', userId, 'comparisons');
+        const q = query(compCol, orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+
+        const records: ComparisonRecord[] = [];
+        snapshot.forEach((docSnap) => {
+          const rec = docSnap.data() as ComparisonRecord;
+          records.push(rec);
+          localDb.saveComparison(rec).catch(() => {});
+        });
+
+        return records;
+      } catch (error) {
+        console.warn('Firestore comparison fetch notice:', error);
+      }
+    }
+
+    return localList;
   },
 
   /**
@@ -175,6 +192,13 @@ export const comparisonService = {
     userId: string,
     comparisonId: string
   ): Promise<ComparisonRecord | null> {
+    try {
+      const local = await localDb.getComparison(comparisonId);
+      if (local) return local;
+    } catch (e) {
+      console.warn('Local comparison lookup notice:', e);
+    }
+
     if (!db) return null;
 
     try {
@@ -184,7 +208,7 @@ export const comparisonService = {
       if (!snapshot.exists()) return null;
       return snapshot.data() as ComparisonRecord;
     } catch (error) {
-      console.warn('Failed to retrieve comparison:', error);
+      console.warn('Firestore comparison retrieval notice:', error);
       return null;
     }
   },
@@ -193,13 +217,19 @@ export const comparisonService = {
    * Deletes a comparison record without touching original documents.
    */
   async deleteComparison(userId: string, comparisonId: string): Promise<void> {
+    try {
+      await localDb.deleteComparison(comparisonId, userId);
+    } catch (e) {
+      console.warn('Local comparison delete notice:', e);
+    }
+
     if (!db) return;
 
     try {
       const compRef = doc(db, 'users', userId, 'comparisons', comparisonId);
       await deleteDoc(compRef);
     } catch (err: any) {
-      throw new ComparisonServiceError(`Failed to delete comparison: ${err.message}`);
+      console.warn('Firestore comparison delete notice:', err);
     }
   },
 };

@@ -12,21 +12,21 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const base =
-    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors select-none';
+    'inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium transition-colors select-none';
 
   const variants = {
     default:
-      'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      'bg-neutral-100 text-neutral-700 dark:bg-[#151515] dark:text-[#B8B8B8] dark:border dark:border-white/10',
     primary:
-      'bg-blue-50 text-blue-700 border border-blue-200/60 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-900',
+      'bg-blue-50 text-blue-700 border border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/60',
     success:
-      'bg-emerald-50 text-emerald-700 border border-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-900',
+      'bg-emerald-50 text-emerald-800 border border-emerald-200/80 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800/50',
     warning:
-      'bg-amber-50 text-amber-800 border border-amber-200/60 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900',
+      'bg-amber-50 text-amber-800 border border-amber-200/80 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800/50',
     danger:
-      'bg-rose-50 text-rose-700 border border-rose-200/60 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-900',
+      'bg-rose-50 text-rose-800 border border-rose-200/80 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-800/50',
     outline:
-      'border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-300',
+      'border border-neutral-300 text-neutral-700 dark:border-white/15 dark:text-[#B8B8B8]',
   };
 
   return (
