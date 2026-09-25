@@ -45,10 +45,18 @@ export function mapFirebaseError(error: unknown): string {
         return 'This account has been disabled. Please contact support.';
       case 'auth/popup-closed-by-user':
         return 'Sign-in window was closed before completing authentication.';
+      case 'auth/popup-blocked':
+        return 'The sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
       case 'auth/cancelled-popup-request':
         return 'Sign-in request was cancelled.';
       case 'auth/operation-not-allowed':
-        return 'This authentication provider is not enabled in the Firebase console.';
+        return 'Google Sign-In is not enabled in your Firebase console. Please go to Firebase Console -> Authentication -> Sign-in method and enable Google.';
+      case 'auth/unauthorized-domain':
+        return `This domain (${typeof window !== 'undefined' ? window.location.hostname : 'current domain'}) is not authorized in your Firebase console. Please go to Firebase Console -> Authentication -> Settings -> Authorized domains and add "${typeof window !== 'undefined' ? window.location.hostname : 'this domain'}".`;
+      case 'auth/account-exists-with-different-credential':
+        return 'An account already exists with the same email address using a different sign-in method. Please sign in with that method.';
+      case 'auth/auth-domain-config-required':
+        return 'Firebase authDomain is not properly configured. Please check your VITE_FIREBASE_AUTH_DOMAIN setting.';
       default:
         return error.message || 'Unable to authenticate. Please check your details and try again.';
     }
