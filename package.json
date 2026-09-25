@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "scripts": {
     "dev": "vite",
     "server": "node --import tsx server/index.ts",
     "start": "node --import tsx server/index.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm install && tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
