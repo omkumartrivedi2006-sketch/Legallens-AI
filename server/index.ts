@@ -45,13 +45,13 @@ const distPath = path.join(rootDir, 'dist');
 app.use(express.static(distPath));
 
 // Fallback to index.html for client-side routing (excluding /api)
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) {
+app.use((req, res, next) => {
+  if (req.method !== 'GET' || req.path.startsWith('/api')) {
     return next();
   }
   res.sendFile(path.join(distPath, 'index.html'), (err) => {
     if (err) {
-      next();
+      next(err);
     }
   });
 });

@@ -10,7 +10,7 @@
     "dev": "vite",
     "server": "node --import tsx server/index.ts",
     "start": "node --import tsx server/index.ts",
-    "build": "npm install --include=dev && tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
